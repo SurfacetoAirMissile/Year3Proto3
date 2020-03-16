@@ -19,7 +19,7 @@ public class Enemy : MonoBehaviour
 
     IEnumerator TargetInRange()
     {
-        while(true)
+        while (true)
         {
             if (AwareOfTarget())
             {
@@ -54,7 +54,7 @@ public class Enemy : MonoBehaviour
         Gizmos.DrawRay(transform.position, Quaternion.AngleAxis(radius / 2.0f, transform.up) * transform.forward * radius);
 
         if (seenTarget) Gizmos.color = Color.red;
-      
+
         Gizmos.DrawCube(target.position, new Vector3(1.01f, 1.01f, 1.01f));
     }
 }

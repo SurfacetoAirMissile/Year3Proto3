@@ -156,7 +156,7 @@ MonoBehaviour:
   m_DefaultLookDevProfile: {fileID: 0}
   m_RenderingPathDefaultCameraFrameSettings:
     bitDatas:
-      data1: 70297877217117
+      data1: 70297296306013
       data2: 4539628424926265344
     lodBias: 1
     lodBiasMode: 0
@@ -282,7 +282,7 @@ MonoBehaviour:
       enabled: 1
       maxPercentage: 100
       minPercentage: 50
-      dynResType: 1
+      dynResType: 0
       upsampleFilter: 1
       forceResolution: 0
       forcedPercentage: 10

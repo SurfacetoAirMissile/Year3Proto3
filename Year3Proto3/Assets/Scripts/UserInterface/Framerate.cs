@@ -1,20 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using TMPro;
 using UnityEngine;
-using TMPro;
 
 public class Framerate : MonoBehaviour
 {
     private TMP_Text text;
     private float timer;
 
-    void Start()
+    private void Start()
     {
         text = GetComponent<TMP_Text>();
     }
 
-
-    void Update()
+    private void Update()
     {
         timer -= Time.unscaledDeltaTime;
 
@@ -23,7 +20,5 @@ public class Framerate : MonoBehaviour
             text.text = (1.0f / Time.unscaledDeltaTime).ToString("0");
             timer = 0.25f;
         }
-
-        
     }
 }

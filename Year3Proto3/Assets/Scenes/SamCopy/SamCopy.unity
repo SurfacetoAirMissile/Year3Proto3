@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 131.16855, g: 162.52502, b: 215.10977, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -9251,7 +9251,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2134816261}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &758530820
 AudioSource:
@@ -10297,6 +10297,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7456058544733569513, guid: afbcbc6ee1480444aac85fdb63859211,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 7456058545053811617, guid: afbcbc6ee1480444aac85fdb63859211,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -10317,10 +10322,35 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7456058545053811620, guid: afbcbc6ee1480444aac85fdb63859211,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7456058545153655860, guid: afbcbc6ee1480444aac85fdb63859211,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7456058545198875856, guid: afbcbc6ee1480444aac85fdb63859211,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 7456058545198875859, guid: afbcbc6ee1480444aac85fdb63859211,
         type: 3}
       propertyPath: m_LocalPosition.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7456058545829164154, guid: afbcbc6ee1480444aac85fdb63859211,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7456058545975130163, guid: afbcbc6ee1480444aac85fdb63859211,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 7456058546024357579, guid: afbcbc6ee1480444aac85fdb63859211,
         type: 3}
@@ -10397,6 +10427,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 7456058546024357580, guid: afbcbc6ee1480444aac85fdb63859211,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 7456058546024357582, guid: afbcbc6ee1480444aac85fdb63859211,
         type: 3}
       propertyPath: m_Material
@@ -10412,6 +10447,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Drag
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7456058546306070788, guid: afbcbc6ee1480444aac85fdb63859211,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: afbcbc6ee1480444aac85fdb63859211, type: 3}
@@ -10448,7 +10488,7 @@ Transform:
   - {fileID: 42065155}
   - {fileID: 353198517}
   m_Father: {fileID: 2134816261}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 90.00001, z: 0}
 --- !u!135 &988337243
 SphereCollider:
@@ -18027,15 +18067,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2134816257}
-  m_LocalRotation: {x: -0, y: -0.70710707, z: -0, w: 0.70710653}
-  m_LocalPosition: {x: 3.76, y: 0.5, z: 4.64}
+  m_LocalRotation: {x: -0, y: -0.94901186, z: -0, w: 0.31524047}
+  m_LocalPosition: {x: 4.33, y: 0.5, z: 5.96}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 758530819}
   - {fileID: 988337242}
+  - {fileID: 758530819}
   m_Father: {fileID: 0}
   m_RootOrder: 10
-  m_LocalEulerAnglesHint: {x: 0, y: -90.00001, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -143.24901, z: 0}
 --- !u!114 &2134816262
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18051,9 +18091,7 @@ MonoBehaviour:
   angle: 0
   radius: 0
   target: {fileID: 0}
-  layer:
-    serializedVersion: 2
-    m_Bits: 0
+  layer: 0
 --- !u!195 &2134816263
 NavMeshAgent:
   m_ObjectHideFlags: 0

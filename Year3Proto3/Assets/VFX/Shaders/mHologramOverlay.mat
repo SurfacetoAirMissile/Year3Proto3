@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Custom_hologram
+  m_Name: mHologramOverlay
   m_Shader: {fileID: 4800000, guid: 3a3ae2df26653364d8bd353722dc8638, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -20,7 +20,11 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 9841cd7c561ad09439028dbcbcc210a2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Mask:
+        m_Texture: {fileID: 2800000, guid: 14671eade0249c24da98941973d20940, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Pattern:
@@ -29,7 +33,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _SpeedX: 0
+    - _SpeedXMask: 9.3
+    - _SpeedXPatt: 0
     - _SpeedY: 0.2
-    - _Value: 50
+    - _SpeedYMask: 15.44
+    - _SpeedYPatt: 0.33
+    - _Value: 25
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}

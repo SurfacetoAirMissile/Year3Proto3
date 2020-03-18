@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private float mouseSensitivity = 90f;
 
-    private Vector3 cameraRestPosition, rightLeanTarget, leftLeanTarget, frontLeanTarget, backLeanTarget;
+    private Transform cameraRestPosition, rightLeanTarget, leftLeanTarget, frontLeanTarget, backLeanTarget;
     private float rightLeanAmount, leftLeanAmount, frontLeanAmount, backLeanAmount;
     private Rigidbody playerRB = null;
     private KeyCode forwardKey = KeyCode.W;
@@ -31,15 +31,15 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         // initialize Camera Rest Position
-        cameraRestPosition = transform.Find("CameraRestPosition").localPosition + transform.localPosition;
+        cameraRestPosition = transform.Find("CameraRestPosition");
         // initialize Lean Offsets
         for (int i = 1; i < transform.childCount; i++)
         {
             Transform childI = transform.GetChild(i);
-            if (childI.name.Contains("RightLeanTarget")) { rightLeanTarget = childI.localPosition + transform.localPosition; }
-            if (childI.name.Contains("LeftLeanTarget")) { leftLeanTarget = childI.localPosition + transform.localPosition; }
-            if (childI.name.Contains("FrontLeanTarget")) { frontLeanTarget = childI.localPosition + transform.localPosition; }
-            if (childI.name.Contains("BackLeanTarget")) { backLeanTarget = childI.localPosition + transform.localPosition; }
+            if (childI.name.Contains("RightLeanTarget")) { rightLeanTarget = childI; }
+            if (childI.name.Contains("LeftLeanTarget")) { leftLeanTarget = childI; }
+            if (childI.name.Contains("FrontLeanTarget")) { frontLeanTarget = childI; }
+            if (childI.name.Contains("BackLeanTarget")) { backLeanTarget = childI; }
         }
         // initialize Lean Amounts
         rightLeanAmount = 0f; leftLeanAmount = 0f; frontLeanAmount = 0f; backLeanAmount = 0f;
@@ -50,7 +50,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
@@ -59,10 +59,15 @@ public class PlayerController : MonoBehaviour
         float mouseX = Mathf.Clamp(Input.GetAxisRaw(mouseXInputName) * mouseSensitivity * Time.smoothDeltaTime, -50f, 50f);
         cameraPitch += Mathf.Clamp(Input.GetAxisRaw(mouseYInputName) * mouseSensitivity * Time.smoothDeltaTime, -50f, 50f);
         cameraPitch = Mathf.Clamp(cameraPitch, -45f, 45f);
-        Debug.Log(cameraPitch);
+        //Debug.Log(cameraPitch);
         transform.parent.Rotate(new Vector3(0f, mouseX, 0f));
         UpdateMove();
         UpdateCamera();
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            playerRB.AddForce(Vector3.up * 200f);
+        }
     }
 
     void UpdateCamera()
@@ -72,42 +77,49 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(forwardKey)) { frontLeanAmount += Time.deltaTime * leanSpeed; }
         else { frontLeanAmount -= Time.deltaTime * leanSpeed; }
         frontLeanAmount = Mathf.Clamp(frontLeanAmount, 0f, 1f);
-        Vector3 frontLean = Vector3.Lerp(cameraRestPosition, frontLeanTarget, leanCurve.Evaluate(frontLeanAmount));
-        Vector3 frontOffset = frontLean - cameraRestPosition;
+        Vector3 frontLean = Vector3.Lerp(cameraRestPosition.position, frontLeanTarget.position, leanCurve.Evaluate(frontLeanAmount));
+        Vector3 frontOffset = frontLean - cameraRestPosition.position;
 
         // Back
         if (Input.GetKey(backKey)) { backLeanAmount += Time.deltaTime * leanSpeed; }
         else { backLeanAmount -= Time.deltaTime * leanSpeed; }
         backLeanAmount = Mathf.Clamp(backLeanAmount, 0f, 1f);
-        Vector3 backLean = Vector3.Lerp(cameraRestPosition, backLeanTarget, leanCurve.Evaluate(backLeanAmount));
-        Vector3 backOffset = backLean - cameraRestPosition;
+        Vector3 backLean = Vector3.Lerp(cameraRestPosition.position, backLeanTarget.position, leanCurve.Evaluate(backLeanAmount));
+        Vector3 backOffset = backLean - cameraRestPosition.position;
 
         // Right
         if (Input.GetKey(rightKey)) { rightLeanAmount += Time.deltaTime * leanSpeed; }
         else { rightLeanAmount -= Time.deltaTime * leanSpeed; }
         rightLeanAmount = Mathf.Clamp(rightLeanAmount, 0f, 1f);
-        Vector3 rightLean = Vector3.Lerp(cameraRestPosition, rightLeanTarget, leanCurve.Evaluate(rightLeanAmount));
-        Vector3 rightOffset = rightLean - cameraRestPosition;
+        Vector3 rightLean = Vector3.Lerp(cameraRestPosition.position, rightLeanTarget.position, leanCurve.Evaluate(rightLeanAmount));
+        Vector3 rightOffset = rightLean - cameraRestPosition.position;
 
         // Left
         if (Input.GetKey(leftKey)) { leftLeanAmount += Time.deltaTime * leanSpeed; }
         else { leftLeanAmount -= Time.deltaTime * leanSpeed; }
         leftLeanAmount = Mathf.Clamp(leftLeanAmount, 0f, 1f);
-        Vector3 leftLean = Vector3.Lerp(cameraRestPosition, leftLeanTarget, leanCurve.Evaluate(leftLeanAmount));
-        Vector3 leftOffset = leftLean - cameraRestPosition;
+        Vector3 leftLean = Vector3.Lerp(cameraRestPosition.position, leftLeanTarget.position, leanCurve.Evaluate(leftLeanAmount));
+        Vector3 leftOffset = leftLean - cameraRestPosition.position;
 
         // --- Calculating Camera Position & Orientation ---
-        Camera.main.transform.localPosition = cameraRestPosition + frontOffset + backOffset + rightOffset + leftOffset;
 
-        Vector3 cameraLookTarget = Camera.main.transform.localPosition + transform.parent.forward;
-        Vector3 cameraUp = (Camera.main.transform.position - transform.parent.position).normalized;
+        //Camera.main.transform.position = cameraRestPosition.position + frontOffset + backOffset + rightOffset + leftOffset;
+        //Camera.main.transform.position = cameraRestPosition.position + rightOffset + leftOffset;
+
+        //Vector3 cameraUp = (Camera.main.transform.position - transform.parent.position).normalized;
+
+        Vector3 cameraLookTarget = transform.parent.forward;
+
         cameraLookTarget = Vector3.RotateTowards(cameraLookTarget, cameraPitch > 0f ? Vector3.up : Vector3.down, Mathf.Abs(cameraPitch) * Mathf.Deg2Rad, 0f);
-        Camera.main.transform.LookAt(transform.parent.position + cameraLookTarget, cameraUp);
-        float upDifference = frontOffset.z + backOffset.z;
-        if (frontOffset != Vector3.zero || backOffset != Vector3.zero)
-        {
+
+        //Camera.main.transform.LookAt(transform.parent.position + Camera.main.transform.localPosition + cameraLookTarget, cameraUp);
+        Camera.main.transform.LookAt(transform.parent.position + Camera.main.transform.localPosition + cameraLookTarget);
+        //float upDifference = frontOffset.z + backOffset.z;
+        //if (frontOffset != Vector3.zero || backOffset != Vector3.zero)
+        //{
             //Camera.main.transform.Rotate(new Vector3(upDifference, 0f, 0f));
-        }
+        //}
+        
     }
 
     void UpdateMove()

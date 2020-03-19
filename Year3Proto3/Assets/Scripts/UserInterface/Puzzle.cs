@@ -2,7 +2,7 @@
 
 public class Puzzle : MonoBehaviour
 {
-    public bool isComplete;
+    protected bool isComplete;
 
     public bool Validate()
     {

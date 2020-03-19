@@ -11,6 +11,14 @@ public class HologramFX : MonoBehaviour
 
     private void Start()
     {
+        if (showHologram)
+        {
+            Show();
+        }
+        else
+        {
+            Hide();
+        }
     }
 
     private void Update()

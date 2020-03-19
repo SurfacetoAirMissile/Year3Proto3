@@ -37,7 +37,7 @@ public class HologramFX : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F))
         {
-            showHologram = !showHologram;
+            //showHologram = !showHologram;
         }
     }
 

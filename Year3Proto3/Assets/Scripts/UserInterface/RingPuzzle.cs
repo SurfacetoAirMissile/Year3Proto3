@@ -39,6 +39,8 @@ public class RingPuzzle : Puzzle
 
     private Rings masterRing;
 
+    private HologramFX holo;
+
     private void Start()
     {
         stateCount = System.Enum.GetValues(typeof(Rings.RotationState)).Length;
@@ -51,40 +53,50 @@ public class RingPuzzle : Puzzle
             ring[i].ringObject = transform.Find("Rings").GetChild(i).gameObject;
         }
 
+        holo = GetComponent<HologramFX>();
+
         InitializePuzzle();
     }
 
     private void Update()
     {
-        // Change selection with up and down arrow keys
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.GetKeyDown(KeyCode.F))
         {
-            SetSelection(selectedIndex - 1);
-        }
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            SetSelection(selectedIndex + 1);
+            holo.showHologram = !holo.showHologram;
         }
 
-        // Adjust rotation with left and right arrow keys
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        if (holo.showHologram)
         {
-            SetRotation(-1);
-        }
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            SetRotation(1);
-        }
+            // Change selection with up and down arrow keys
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                SetSelection(selectedIndex - 1);
+            }
+            if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                SetSelection(selectedIndex + 1);
+            }
 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            InitializePuzzle();
-        }
+            // Adjust rotation with left and right arrow keys
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                SetRotation(-1);
+            }
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                SetRotation(1);
+            }
 
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            multiMode = !multiMode;
-            InitializePuzzle();
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                InitializePuzzle();
+            }
+
+            if (Input.GetKeyDown(KeyCode.M))
+            {
+                multiMode = !multiMode;
+                InitializePuzzle();
+            }
         }
     }
 
@@ -181,5 +193,11 @@ public class RingPuzzle : Puzzle
         isComplete = tempValid;
 
         transform.Find("Check").GetComponent<HologramFX>().showHologram = isComplete;
+    }
+
+    private void OnMouseEnter()
+    {
+        SetSelection(0);
+        Debug.Log("Mouse Enter");
     }
 }

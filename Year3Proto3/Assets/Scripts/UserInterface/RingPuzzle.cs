@@ -4,16 +4,13 @@ using UnityEngine.UI;
 
 public class RingPuzzle : Puzzle
 {
+    public bool multiMode;
     public Color unselectedColor;
     public Color selectedColor;
-    public Color completeColor;
     public int selectedIndex;
-    public string keyCorrect;
-    public string keyCurrent;
 
     private int stateCount;
-    private int ringCount;
-    private bool hasInitialized;
+    public int ringCount;
 
     [System.Serializable]
     public struct Rings
@@ -33,114 +30,126 @@ public class RingPuzzle : Puzzle
             NorthWest
         }
 
-        public RotationState rotationStateInitial;
+        public RotationState rotationStateKey;
         public RotationState rotationState;
     }
 
     [SerializeField]
     private Rings[] ring;
+    private Rings masterRing;
 
     private void Start()
     {
         stateCount = System.Enum.GetValues(typeof(Rings.RotationState)).Length;
         ringCount = transform.Find("Rings").childCount;
 
+        masterRing.ringObject = transform.Find("MasterRing").gameObject;
+
         for (int i = 0; i < ringCount; i++)
         {
             ring[i].ringObject = transform.Find("Rings").GetChild(i).gameObject;
         }
 
-        SetSelection();
-
+        SetSelection(selectedIndex);
         InitializePuzzle();
     }
 
     private void Update()
     {
-        // Selecting
-        if (Input.GetKeyDown(KeyCode.UpArrow) && selectedIndex > 0)
+        // Change selection with up and down arrow keys
+        if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            selectedIndex--;
-            SetSelection();
+            SetSelection(selectedIndex - 1);
         }
-        if (Input.GetKeyDown(KeyCode.DownArrow) && selectedIndex < ringCount - 1)
+        if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            selectedIndex++;
-            SetSelection();
+            SetSelection(selectedIndex + 1);
         }
 
-        // Rotating
+        // Adjust rotation with left and right arrow keys
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            ring[selectedIndex].rotationState--;
-            if (ring[selectedIndex].rotationState < 0)
-            {
-                ring[selectedIndex].rotationState = (Rings.RotationState)stateCount - 1;
-            }
-            SetRotation();
+            SetRotation(-1);
         }
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            ring[selectedIndex].rotationState++;
-            if (ring[selectedIndex].rotationState > (Rings.RotationState)stateCount - 1)
-            {
-                ring[selectedIndex].rotationState = 0;
-            }
-            SetRotation();
+            SetRotation(1);
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            InitializePuzzle();
         }
     }
 
     private void InitializePuzzle()
     {
-        // Store initial rotation state of rings
-        if (!hasInitialized)
-        {
-            for (int i = 0; i < ringCount; i++)
-            {
-                ring[i].rotationStateInitial = (Rings.RotationState)Mathf.RoundToInt(ring[i].ringObject.transform.localRotation.eulerAngles.z / 45.0f);
-                ring[i].rotationState = ring[i].rotationStateInitial;
+        // Scramble roatation of master ring
+        masterRing.rotationState = (Rings.RotationState)Random.Range(0, stateCount - 1);
+        masterRing.ringObject.transform.localEulerAngles = new Vector3(0.0f, 0.0f, (float)masterRing.rotationState * 45.0f);
 
-                hasInitialized = true;
-            }
-        }
-
-        // Scramble rotation states of rings
         for (int i = 0; i < ringCount; i++)
         {
-            while (ring[i].rotationState == ring[i].rotationStateInitial)
+            // Store correct key rotation state of rings
+            ring[i].rotationStateKey = masterRing.rotationState;
+
+            // Scramble rotation states of rings
+            ring[i].rotationState = (Rings.RotationState)Random.Range(0, stateCount - 1);
+            // Do not allow any ring to be already in correct rotation
+            while (ring[i].rotationState == ring[i].rotationStateKey)
             {
                 ring[i].rotationState = (Rings.RotationState)Random.Range(0, stateCount - 1);
             }
         }
 
-        SetRotation();
+        SetRotation(0);
     }
 
-    private void SetSelection()
+    private void SetSelection(int index)
     {
+        index = Mathf.Clamp(index, 0, ringCount - 1);
+        selectedIndex = index;
+
         for (int i = 0; i < ringCount; i++)
         {
-            if (i == selectedIndex)
+            bool multi = multiMode ? (i <= selectedIndex) : (i == selectedIndex);
+
+            if (multi)
             {
                 ring[i].ringObject.GetComponent<Image>().color = selectedColor;
                 ring[i].ringObject.transform.DOKill(true);
                 ring[i].ringObject.transform.DOPunchScale(new Vector3(0.05f, 0.05f, 0.0f), 0.15f, 1, 1.0f);
-
                 ring[i].isSelected = true;
             }
             else
             {
                 ring[i].ringObject.GetComponent<Image>().color = unselectedColor;
-
                 ring[i].isSelected = false;
             }
         }
     }
 
-    private void SetRotation()
+    public void SetRotation(int rot)
     {
         for (int i = 0; i < ringCount; i++)
         {
+            // Rotate all rings that are selected
+            if (ring[i].isSelected)
+            {
+                ring[i].rotationState += rot;
+            }
+
+            // Wrap around
+            if (ring[i].rotationState < 0)
+            {
+                ring[i].rotationState = (Rings.RotationState)stateCount - 1;
+            }
+            if (ring[i].rotationState > (Rings.RotationState)stateCount - 1)
+            {
+                ring[i].rotationState = 0;
+            }
+
+            // Tween to rotation
             float targerRot = (float)ring[i].rotationState * 45.0f;
             ring[i].ringObject.transform.DOLocalRotate(new Vector3(0.0f, 0.0f, targerRot), 0.3f).SetEase(Ease.OutQuint);
         }
@@ -150,11 +159,13 @@ public class RingPuzzle : Puzzle
 
     private void SetValidation()
     {
+        // Update completion state of puzzle
+
         bool tempValid = true;
 
         for (int i = 0; i < ringCount; i++)
         {
-            if (ring[i].rotationState != ring[i].rotationStateInitial)
+            if (ring[i].rotationState != ring[i].rotationStateKey)
             {
                 tempValid = false;
             }

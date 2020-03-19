@@ -11,7 +11,6 @@ public class RingPuzzle : Puzzle
 
     private int stateCount;
     public int ringCount;
-    private bool hasInitialized;
 
     [System.Serializable]
     public struct Rings
@@ -76,27 +75,33 @@ public class RingPuzzle : Puzzle
         {
             SetRotation(1);
         }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            InitializePuzzle();
+        }
     }
 
     private void InitializePuzzle()
     {
         // Scramble roatation of master ring
         masterRing.rotationState = (Rings.RotationState)Random.Range(0, stateCount - 1);
-        masterRing.ringObject.transform.DOLocalRotate(new Vector3(0.0f, 0.0f, (float)masterRing.rotationState * 45.0f), 0.0f);
+        masterRing.ringObject.transform.localEulerAngles = new Vector3(0.0f, 0.0f, (float)masterRing.rotationState * 45.0f);
 
         for (int i = 0; i < ringCount; i++)
         {
             // Store correct key rotation state of rings
             ring[i].rotationStateKey = masterRing.rotationState;
-            
+
             // Scramble rotation states of rings
+            ring[i].rotationState = (Rings.RotationState)Random.Range(0, stateCount - 1);
+            // Do not allow any ring to be already in correct rotation
             while (ring[i].rotationState == ring[i].rotationStateKey)
             {
                 ring[i].rotationState = (Rings.RotationState)Random.Range(0, stateCount - 1);
             }
         }
 
-        hasInitialized = true;
         SetRotation(0);
     }
 
@@ -107,9 +112,9 @@ public class RingPuzzle : Puzzle
 
         for (int i = 0; i < ringCount; i++)
         {
-            bool mode = multiMode ? (i <= selectedIndex) : (i == selectedIndex);
+            bool multi = multiMode ? (i <= selectedIndex) : (i == selectedIndex);
 
-            if (mode)
+            if (multi)
             {
                 ring[i].ringObject.GetComponent<Image>().color = selectedColor;
                 ring[i].ringObject.transform.DOKill(true);
@@ -154,6 +159,8 @@ public class RingPuzzle : Puzzle
 
     private void SetValidation()
     {
+        // Update completion state of puzzle
+
         bool tempValid = true;
 
         for (int i = 0; i < ringCount; i++)

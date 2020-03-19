@@ -2,24 +2,46 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class HologramFX : MonoBehaviour
 {
-    [Range(0.0f, 0.5f)] public float flickerAmount;
-    private Image tex;
+    public bool showHologram = true;
+    private bool showing;
 
-    void Start()
+    private void Start()
     {
-        tex = GetComponent<Image>();
     }
 
-
-    void FixedUpdate()
+    private void Update()
     {
-        Vector4 col = tex.color;
-        float alpha = 0.5f + (Random.Range(-flickerAmount, flickerAmount));
-        col.w = alpha;
+        if (showHologram && !showing)
+        {
+            Show();
+            showing = true;
+        }
 
-        tex.color = col;
+        if (!showHologram && showing)
+        {
+            Hide();
+            showing = false;
+        }
+
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            showHologram = !showHologram;
+        }
+    }
+
+    private void Show()
+    {
+        transform.DOKill(true);
+        transform.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.15f).SetEase(Ease.OutBack);
+    }
+
+    private void Hide()
+    {
+        transform.DOKill(true);
+        transform.DOScale(new Vector3(1.5f, 0.0f, 1.0f), 0.15f).SetEase(Ease.OutBack);
     }
 }

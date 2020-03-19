@@ -38,6 +38,6 @@ Material:
     - _SpeedY: 0.2
     - _SpeedYMask: 15.44
     - _SpeedYPatt: 0.33
-    - _Value: 25
+    - _Value: 15
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}

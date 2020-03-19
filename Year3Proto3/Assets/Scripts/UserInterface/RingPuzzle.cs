@@ -107,7 +107,7 @@ public class RingPuzzle : Puzzle
         // Scramble rotation states of rings
         for (int i = 0; i < ringCount; i++)
         {
-            while(ring[i].rotationState == ring[i].rotationStateInitial)
+            while (ring[i].rotationState == ring[i].rotationStateInitial)
             {
                 ring[i].rotationState = (Rings.RotationState)Random.Range(0, stateCount - 1);
             }
@@ -162,13 +162,6 @@ public class RingPuzzle : Puzzle
 
         isComplete = tempValid;
 
-        if (isComplete)
-        {
-            transform.Find("HologramOverlay").GetComponent<Image>().color = completeColor;
-        }
-        else
-        {
-            transform.Find("HologramOverlay").GetComponent<Image>().color = unselectedColor;
-        }
+        transform.Find("Check").GetComponent<HologramFX>().showHologram = isComplete;
     }
 }

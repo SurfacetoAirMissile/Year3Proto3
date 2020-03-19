@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening;
 
-public class RingPuzzle : MonoBehaviour
+public class RingPuzzle : Puzzle
 {
     public Color unselectedColor;
     public Color selectedColor;
@@ -18,6 +16,7 @@ public class RingPuzzle : MonoBehaviour
     {
         public GameObject ringObject;
         public bool isSelected;
+
         public enum RotationState
         {
             North,
@@ -29,13 +28,14 @@ public class RingPuzzle : MonoBehaviour
             West,
             NorthWest
         }
+
         public RotationState rotationState;
     }
 
     [SerializeField]
     private Rings[] ring;
 
-    void Start()
+    private void Start()
     {
         ringCount = transform.Find("Rings").childCount;
 
@@ -47,9 +47,9 @@ public class RingPuzzle : MonoBehaviour
         SetSelection();
     }
 
-
-    void Update()
+    private void Update()
     {
+        // Selecting
         if (Input.GetKeyDown(KeyCode.UpArrow) && selectedIndex > 0)
         {
             selectedIndex--;
@@ -61,6 +61,25 @@ public class RingPuzzle : MonoBehaviour
             SetSelection();
         }
 
+        // Rotating
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            ring[selectedIndex].rotationState--;
+            if ((int)ring[selectedIndex].rotationState < 0)
+            {
+                ring[selectedIndex].rotationState = (Rings.RotationState)System.Enum.GetValues(typeof(Rings.RotationState)).Length - 1;
+            }
+            SetRotation();
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            ring[selectedIndex].rotationState++;
+            if (ring[selectedIndex].rotationState > (Rings.RotationState)System.Enum.GetValues(typeof(Rings.RotationState)).Length - 1)
+            {
+                ring[selectedIndex].rotationState = 0;
+            }
+            SetRotation();
+        }
     }
 
     private void SetSelection()
@@ -86,14 +105,7 @@ public class RingPuzzle : MonoBehaviour
 
     private void SetRotation()
     {
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            ring[selectedIndex].rotationState--;
-        }
-
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            ring[selectedIndex].rotationState++;
-        }
+        float targerRot = (float)ring[selectedIndex].rotationState * 45.0f;
+        ring[selectedIndex].ringObject.transform.DOLocalRotate(new Vector3(0.0f, 0.0f, targerRot), 0.3f).SetEase(Ease.OutQuint);
     }
 }

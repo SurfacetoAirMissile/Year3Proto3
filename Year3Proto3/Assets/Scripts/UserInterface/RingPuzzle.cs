@@ -7,10 +7,10 @@ public class RingPuzzle : Puzzle
     public bool multiMode;
     public Color unselectedColor;
     public Color selectedColor;
-    public int selectedIndex;
 
+    private int selectedIndex;
     private int stateCount;
-    public int ringCount;
+    private int ringCount;
 
     [System.Serializable]
     public struct Rings
@@ -36,6 +36,7 @@ public class RingPuzzle : Puzzle
 
     [SerializeField]
     private Rings[] ring;
+
     private Rings masterRing;
 
     private void Start()
@@ -50,7 +51,6 @@ public class RingPuzzle : Puzzle
             ring[i].ringObject = transform.Find("Rings").GetChild(i).gameObject;
         }
 
-        SetSelection(selectedIndex);
         InitializePuzzle();
     }
 
@@ -80,9 +80,15 @@ public class RingPuzzle : Puzzle
         {
             InitializePuzzle();
         }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            multiMode = !multiMode;
+            InitializePuzzle();
+        }
     }
 
-    private void InitializePuzzle()
+    public void InitializePuzzle()
     {
         // Scramble roatation of master ring
         masterRing.rotationState = (Rings.RotationState)Random.Range(0, stateCount - 1);
@@ -102,6 +108,7 @@ public class RingPuzzle : Puzzle
             }
         }
 
+        SetSelection(0);
         SetRotation(0);
     }
 

@@ -8609,7 +8609,7 @@ GameObject:
   - component: {fileID: 644940747}
   - component: {fileID: 644940746}
   m_Layer: 5
-  m_Name: MasterRIng
+  m_Name: MasterRing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15692,15 +15692,15 @@ MonoBehaviour:
   ring:
   - ringObject: {fileID: 0}
     isSelected: 0
-    rotationStateInitial: 0
+    rotationStateKey: 0
     rotationState: 0
   - ringObject: {fileID: 0}
     isSelected: 0
-    rotationStateInitial: 0
+    rotationStateKey: 0
     rotationState: 0
   - ringObject: {fileID: 0}
     isSelected: 0
-    rotationStateInitial: 0
+    rotationStateKey: 0
     rotationState: 0
 --- !u!1 &1848896319
 GameObject:

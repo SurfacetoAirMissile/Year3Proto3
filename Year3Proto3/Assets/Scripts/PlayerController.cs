@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     private float leanSpeed = 3;
 
     [SerializeField]
-    private AnimationCurve leanCurve;
+    private AnimationCurve leanCurve = new AnimationCurve();
 
     [SerializeField]
     private float mouseSensitivity = 90f;

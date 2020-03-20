@@ -1,24 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using DG.Tweening;
 using UnityEngine;
-using UnityEngine.UI;
-using DG.Tweening;
 
 public class HologramFX : MonoBehaviour
 {
-    public bool showHologram = true;
+    public bool showHologram = false;
     private bool showing;
 
     private void Start()
     {
-        if (showHologram)
-        {
-            Show();
-        }
-        else
-        {
-            Hide();
-        }
+        transform.localScale = new Vector3(1.5f, 0.0f, 1.0f);
     }
 
     private void Update()
@@ -44,7 +34,7 @@ public class HologramFX : MonoBehaviour
     private void Show()
     {
         transform.DOKill(true);
-        transform.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.15f).SetEase(Ease.OutBack);
+        transform.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.2f).SetEase(Ease.OutBack);
     }
 
     private void Hide()

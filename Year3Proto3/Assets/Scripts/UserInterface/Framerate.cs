@@ -1,20 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using TMPro;
 using UnityEngine;
-using TMPro;
 
 public class Framerate : MonoBehaviour
 {
     private TMP_Text text;
     private float timer;
 
-    void Start()
+    private void Start()
     {
         text = GetComponent<TMP_Text>();
     }
 
-
-    void Update()
+    private void Update()
     {
         timer -= Time.unscaledDeltaTime;
 
@@ -24,6 +21,9 @@ public class Framerate : MonoBehaviour
             timer = 0.25f;
         }
 
-        
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            Debug.Log("Complete is " + FindObjectOfType<RingPuzzle>().Validate());
+        }
     }
 }

@@ -76,7 +76,7 @@ public class RingPuzzle : Puzzle
             {
                 SetSelection(selectedIndex + 1);
             }
-
+             
             // Adjust rotation with left and right arrow keys
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {

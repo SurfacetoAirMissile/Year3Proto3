@@ -6,8 +6,7 @@ using DG.Tweening;
 public class Door : MonoBehaviour
 {
     public DoorCollider doorCollider;
-
-    public Vector3 finalPosition;
+     
     private Vector3 initialPosition;
 
     private bool open = false;
@@ -21,21 +20,17 @@ public class Door : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.E) && interact && doorCollider.HasEntered())
         {
+            Vector3 position = new Vector3(0.0f, 0.0f, transform.localScale.z);
+
             interact = false;
 
             transform.DOKill(false);
-            transform.DOLocalMove((open) ? initialPosition : finalPosition, 1.2f)
+            transform.DOLocalMove((open) ? initialPosition : (transform.rotation * position) + initialPosition, 1.2f)
                 .SetEase(Ease.OutQuint)
                 .OnComplete(() => {
                     open = (open) ? false : true;
                     interact = true;
                 });
         }
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(finalPosition, transform.localScale);
     }
 }

@@ -25,6 +25,14 @@ public class PlayerController : MonoBehaviour
     private KeyCode rightKey = KeyCode.D;
     private string mouseXInputName = "Mouse X", mouseYInputName = "Mouse Y";
     private float cameraPitch = 0f;
+    public Enemy hackableEnemy = null;
+    public Vector3 puzzleDestination = Vector3.zero;
+    public bool isHacking = false;
+    public Puzzle currentPuzzle;
+    public bool lerpingToPuzzle = false;
+    public float lerpTime = 0.2f;
+    public float currentTime = 0.0f;
+    public Vector3 startPosition = Vector3.zero;
 
     // I'm using Awake for initialization of variables.
     // Awake is called on creation of the object (before Start)
@@ -61,13 +69,48 @@ public class PlayerController : MonoBehaviour
         cameraPitch = Mathf.Clamp(cameraPitch, -45f, 45f);
         //Debug.Log(cameraPitch);
         transform.parent.Rotate(new Vector3(0f, mouseX, 0f));
-        UpdateMove();
-        UpdateCamera();
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (GameManager.Instance.playerControl)
         {
-            playerRB.AddForce(Vector3.up * 200f);
+            UpdateMove();
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                AttemptHack();
+            }
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                playerRB.AddForce(Vector3.up * 200f);
+            }
         }
+        else
+        {
+            if (lerpingToPuzzle)
+            {
+                currentTime += Time.deltaTime;
+                if (currentTime < lerpTime)
+                {
+                    LerpToPuzzle(currentTime / lerpTime);
+                }
+                else
+                {
+                    LerpToPuzzle(1f);
+                    StartHack();
+                }
+            }
+            if (isHacking)
+            {
+                if (currentPuzzle.Validate())
+                {
+                    Destroy(hackableEnemy.gameObject);
+                    Destroy(currentPuzzle.gameObject);
+                    hackableEnemy = null;
+                    currentPuzzle = null;
+                    isHacking = false;
+                    GameManager.Instance.playerControl = true;
+                }
+            }
+        }
+        UpdateCamera();
     }
 
     void UpdateCamera()
@@ -137,5 +180,33 @@ public class PlayerController : MonoBehaviour
         {
             playerRB.AddForce(forceTotal.normalized * movementAmount);
         }
+    }
+
+    void AttemptHack()
+    {
+        if (hackableEnemy && !isHacking)
+        {
+            currentTime = 0f;
+            startPosition = transform.parent.position;
+            lerpingToPuzzle = true;
+            GameManager.Instance.playerControl = false;
+        }
+    }
+
+    void StartHack()
+    {
+        currentPuzzle = Instantiate(GameManager.Instance.ringPuzzle).GetComponent<Puzzle>();
+        currentPuzzle.transform.position = transform.position + (transform.forward * 0.6f);
+        currentPuzzle.GetComponentInChildren<HologramFX>().showHologram = true;
+        currentPuzzle.transform.LookAt(transform);
+        isHacking = true;
+        lerpingToPuzzle = false;
+    }
+
+    void LerpToPuzzle(float _amount)
+    {
+        Vector3 targetPosition = puzzleDestination;
+        targetPosition.y = transform.parent.position.y;
+        transform.parent.position = Vector3.Lerp(startPosition, targetPosition, _amount);
     }
 }

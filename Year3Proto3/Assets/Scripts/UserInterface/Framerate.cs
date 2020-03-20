@@ -20,5 +20,10 @@ public class Framerate : MonoBehaviour
             text.text = (1.0f / Time.unscaledDeltaTime).ToString("0");
             timer = 0.25f;
         }
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            Debug.Log("Complete is " + FindObjectOfType<RingPuzzle>().Validate());
+        }
     }
 }

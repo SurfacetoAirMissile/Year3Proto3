@@ -11,6 +11,14 @@ public class HologramFX : MonoBehaviour
 
     private void Start()
     {
+        if (showHologram)
+        {
+            Show();
+        }
+        else
+        {
+            Hide();
+        }
     }
 
     private void Update()
@@ -29,7 +37,7 @@ public class HologramFX : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F))
         {
-            showHologram = !showHologram;
+            //showHologram = !showHologram;
         }
     }
 

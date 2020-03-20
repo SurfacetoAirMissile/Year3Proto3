@@ -61,6 +61,13 @@ public class PlayerController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
     }
 
+    IEnumerator WaitForAnimation()
+    {
+        yield return new WaitForSeconds(0.50f);
+        currentPuzzle.GetComponent<HologramFX>().showHologram = false;
+        currentPuzzle = null;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -101,10 +108,10 @@ public class PlayerController : MonoBehaviour
             {
                 if (currentPuzzle.Validate())
                 {
-                    Destroy(hackableEnemy.gameObject);
-                    Destroy(currentPuzzle.gameObject);
+                    StartCoroutine(WaitForAnimation());
+                    hackableEnemy.ChangeState(Enemy.AIState.deactivated);
+                    hackableEnemy.isBeingHacked = false;
                     hackableEnemy = null;
-                    currentPuzzle = null;
                     isHacking = false;
                     GameManager.Instance.playerControl = true;
                 }
@@ -190,6 +197,7 @@ public class PlayerController : MonoBehaviour
             startPosition = transform.parent.position;
             lerpingToPuzzle = true;
             GameManager.Instance.playerControl = false;
+            hackableEnemy.isBeingHacked = true;
         }
     }
 

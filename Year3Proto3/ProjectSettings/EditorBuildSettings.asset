@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/DavidDev.unity
-    guid: 38d45305a90b34841bb2795ef30cd0f5
+    path: Assets/Scenes/SamCopy2/SamCopy2.unity
+    guid: ce72bea60bbb38c4b8bed70123ca8a78
   m_configObjects: {}

@@ -4,89 +4,111 @@ using UnityEngine;
 using UnityEngine.AI;
 using System;
 
-enum AIState
-{
-    watch,
-    patrol
-}
-
-[Serializable]
-struct StateObject
-{
-    public Path patrol;
-    public Watch guard;
-}
-
-[Serializable]
-struct Path
-{
-    public List<PathPoint> pathPoints;
-
-    Path(List<PathPoint> _pathPoints)
-    {
-        pathPoints = _pathPoints;
-    }
-}
-
-[Serializable]
-struct PathPoint
-{
-    public Vector3 point;
-    public float waitTime;
-
-    PathPoint(Vector3 _point, float _waitTime)
-    {
-        point = _point;
-        waitTime = _waitTime;
-    }
-}
-
-[Serializable]
-struct Watch
-{
-    public Vector3 standPosition;
-    public Vector3 watchPosition;
-
-    Watch(Vector3 _standPosition, Vector3 _watchPosition)
-    {
-        standPosition = _standPosition;
-        watchPosition = _watchPosition;
-    }
-}
 
 public class Enemy : MonoBehaviour
 {
-    public float angle;
-    public float radius;
 
-    public Transform target = null;
-    public int layer = 0;
+    [Serializable]
+    public enum AIState
+    {
+        watch,
+        patrol,
+        deactivated
+    }
 
-    private bool seenTarget;
-    NavMeshAgent agent;
-    AIState currentState = AIState.watch;
-    StateObject currentStateObject;
+    [Serializable]
+    struct StateObject
+    {
+        public Path patrol;
+        public Watch guard;
+    }
+
+    [Serializable]
+    struct Path
+    {
+        public List<PathPoint> points;
+    }
+
+    [Serializable]
+    struct PathPoint
+    {
+        public Vector3 point;
+        public float waitTime;
+    }
+
+    [Serializable]
+    struct Watch
+    {
+        public Vector3 standPosition;
+        public Vector3 watchPosition;
+    }
+
+    // --- HARD-CODED CONSTANTS ---
+    private int kPlayerLayer = 9;
+
+    // --- SET IN EDITOR ---
+    [SerializeField] [Tooltip("The enemy's field of view.")]
+    private float FOV = 60f;
+    [SerializeField] [Tooltip("The maximum distance that the enemy can see.")]
+    private float spottingDistance = 40f;
+    [SerializeField] [Tooltip("How quickly the enemy moves.")]
+    private float movementSpeed = 1.5f;
+    [SerializeField] [Tooltip("The colour of the enemy's light when the enemy hasn't spotted the player.")]
+    private Color normalColour = Color.blue;
+    [SerializeField] [Tooltip("The colour of the enemy's light when the enemy has spotted the player.")]
+    private Color spottedColour = Color.red;
+    [SerializeField] [Tooltip("The enemies starting state.")]
+    private AIState startState = AIState.watch;
+    [SerializeField] [Tooltip("The enemies starting stateObject.")]
+    private StateObject startStateObject = new StateObject();
+    [SerializeField] [Tooltip("If the enemy is set to be patrol, this object needs to be filled. The GameObject must have a series of points as child GameObjects, each point's position will be taken as a point to patrol, and it's Y scale will be taken as how long to stay at that point for. The object will be destroyed at runtime.")]
+    private Transform startPath = null;
+
+    // --- MUST BE INITIALIZED IN START ---
+    private Transform player;
+    private NavMeshAgent agent;
+    private AIState currentState;
+    private StateObject currentStateObject;
+    private bool lightsActive;
+    //private bool seenTarget;
+    private int currentPoint;
+    private float currentPointTime;
+    public bool isBeingHacked;
+
+    public void ChangeState(AIState _newState)
+    {
+        currentState = _newState;
+    }
 
     private void Start()
     {
+        isBeingHacked = false;
+        currentState = startState;
+        currentStateObject = startStateObject;
+        player = GameObject.Find("Player").transform;
         agent = GetComponent<NavMeshAgent>();
-        //StartCoroutine(TargetInRange());
         agent.updatePosition = false;
-        currentStateObject = new StateObject();
-        currentStateObject.guard.watchPosition = new Vector3(-8f, 1f, -3f);
-        currentStateObject.guard.standPosition = new Vector3(2f, 0.5f, -3f);
-        agent.SetDestination(currentStateObject.guard.standPosition);
-        target = GameObject.Find("Player").transform;
-        layer = LayerMask.NameToLayer("Target");
-        radius = 5f;
-        angle = 60f;
+        if (startState == AIState.patrol)
+        {
+            currentStateObject.patrol = ConvertPathObject(startPath);
+            agent.SetDestination(currentStateObject.patrol.points[currentPoint].point);
+        }
+        else
+        {
+            agent.SetDestination(currentStateObject.guard.standPosition);
+        }
+        agent.isStopped = true;
+        lightsActive = true;
+        currentPointTime = 0f;
+        currentPoint = 0;
     }
 
+    /*
     IEnumerator TargetInRange()
     {
         while (true)
         {
-            if (AwareOfTarget())
+            if (AwareOfPlayer())
             {
                 seenTarget = true;
             }
@@ -97,35 +119,7 @@ public class Enemy : MonoBehaviour
             yield return new WaitForSeconds(5);
         }
     }
-
-    private bool AwareOfTarget()
-    {
-        Vector3 direction = target.position - transform.position;
-        float angle = Vector3.Angle(direction, transform.forward);
-
-        if (angle >= (this.angle * 0.5f)) return false;
-
-        if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit raycastHit, radius))
-        {
-            if (raycastHit.collider.gameObject.layer == layer) return true;
-        }
-        return false;
-    }
-
-    private void Update()
-    {
-        agent.nextPosition = transform.position;
-
-        switch (currentState)
-        {
-            case AIState.watch:
-                GuardUpdate();
-                break;
-            case AIState.patrol:
-                break;
-        }
-
-    }
+    */
 
     /*
     private void OnDrawGizmos()
@@ -140,32 +134,160 @@ public class Enemy : MonoBehaviour
     }
     */
 
+    private bool AwareOfPlayer()
+    {
+        Vector3 direction = player.position - transform.position;
+        float angle = Vector3.Angle(direction, transform.forward);
+
+        if (angle >= (FOV * 0.5f)) return false;
+
+        if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit raycastHit, spottingDistance))
+        {
+            if (raycastHit.collider.gameObject.layer == kPlayerLayer) return true;
+        }
+        return false;
+    }
+
+    private void Update()
+    {
+        agent.nextPosition = transform.position;
+        if (!isBeingHacked)
+        {
+            switch (currentState)
+            {
+                case AIState.watch:
+                    CheckPlayerSpotted();
+                    GuardUpdate();
+                    break;
+                case AIState.patrol:
+                    CheckPlayerSpotted();
+                    PatrolUpdate();
+                    break;
+                case AIState.deactivated:
+                    if (lightsActive) { DeactivateLights(); }
+                    break;
+            }
+        }
+    }
+
     void GuardUpdate()
     {
-        float distance = (transform.position - currentStateObject.guard.standPosition).magnitude;
-        if (distance > 0.1f)
+        float distance = Vector3.Distance(transform.position, currentStateObject.guard.standPosition);
+        // If the point that the enemy needs to stand at is further than 0.25m away...
+        if (distance > 0.25f)
         {
+            // Move the Enemy towards where the NavMesh wants to go.
             Vector3 steeringDirection = agent.steeringTarget;
             steeringDirection.y = transform.position.y;
-            //Debug.DrawRay(transform.position, (steeringDirection - transform.position).normalized);
-            //agent.Move((steeringDirection - transform.position).normalized * 10f);
-            agent.isStopped = true;
-            GetComponent<Rigidbody>().AddForce((steeringDirection - transform.position).normalized * 20f);
-            agent.isStopped = false;
+            Vector3 difference = (steeringDirection - transform.position) * 4f;
+            Vector3 forceVector = difference.magnitude > 1 ? difference.normalized : difference;
+            GetComponent<Rigidbody>().AddForce(forceVector * Time.deltaTime * 1000f * movementSpeed);
         }
-        else
+        else // If the point is not 0.25m away...
         {
+            // Rotate the guard towards the position they need to watch.
             Vector3 lookTarget = currentStateObject.guard.watchPosition;
             lookTarget.y = transform.position.y;
             Vector3 lookDirection = lookTarget - transform.position;
             transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 5 * Mathf.Deg2Rad, 0f);
-            //transform.LookAt(lookTarget);
-            if (AwareOfTarget())
+        }
+    }
+
+    void PatrolUpdate()
+    {
+        // GoToCurrentPathPoint returns true if the enemy is within the minimum distance for a point
+        if (GoToCurrentPathPoint())
+        {
+            currentPointTime += Time.deltaTime;
+            if (currentPointTime >= currentStateObject.patrol.points[currentPoint].waitTime)
             {
-                transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_EmissiveColor", Color.red);
-                transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.red);
-                transform.GetChild(0).GetChild(1).GetComponent<Light>().color = Color.red;
+                currentPointTime = 0f;
+                currentPoint = GetNextPathPoint();
+                agent.SetDestination(currentStateObject.patrol.points[currentPoint].point);
             }
+        }
+    }
+
+    void CheckPlayerSpotted()
+    {
+        // If the enemy is aware of the player...
+        if (AwareOfPlayer())
+        {
+            // Set the colours.
+            ActivateLights(spottedColour);
+        }
+        else // If the enemy isn't aware of the player...
+        {
+            // Set the colours.
+            ActivateLights(normalColour);
+        }
+    }
+
+    void DeactivateLights()
+    {
+        // Set the colours and switch off the light.
+        transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_EmissiveColor", Color.gray);
+        transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.gray);
+        transform.GetChild(0).GetChild(1).GetComponent<Light>().enabled = false;
+        lightsActive = false;
+    }
+
+    void ActivateLights(Color _colour)
+    {
+        // Set the colours and switch on the light.
+        transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_EmissiveColor", _colour);
+        transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", _colour);
+        transform.GetChild(0).GetChild(1).GetComponent<Light>().enabled = true;
+        transform.GetChild(0).GetChild(1).GetComponent<Light>().color = _colour;
+        lightsActive = true;
+    }
+
+    Path ConvertPathObject(Transform _pathObject)
+    {
+        Path returnPath;
+        returnPath.points = new List<PathPoint>();
+        for (int i = 0; i < _pathObject.childCount; i++)
+        {
+            PathPoint newPathPoint;
+            newPathPoint.point = _pathObject.GetChild(i).position;
+            newPathPoint.waitTime = _pathObject.GetChild(i).localScale.y;
+            returnPath.points.Add(newPathPoint);
+        }
+        Destroy(_pathObject.gameObject);
+        return returnPath;
+    }
+
+    int GetNextPathPoint()
+    {
+        if (currentStateObject.patrol.points.Count == currentPoint + 1)
+        { return 0; }
+        else return currentPoint + 1;
+    }
+
+    bool GoToCurrentPathPoint()
+    {
+        Vector3 target = currentStateObject.patrol.points[currentPoint].point;
+        target.y = transform.position.y;
+        float distance = Vector3.Distance(transform.position, target);
+        // If the point that the enemy needs to stand at is further than 0.25m away...
+        if (distance > 0.25f)
+        {
+            // Rotate the guard towards the position they need to watch.
+            Vector3 lookTarget = currentStateObject.patrol.points[currentPoint].point;
+            lookTarget.y = transform.position.y;
+            Vector3 lookDirection = lookTarget - transform.position;
+            transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 5 * Mathf.Deg2Rad, 0f);
+
+            // Move the Enemy towards where the NavMesh wants to go.
+            Vector3 steeringDirection = agent.steeringTarget;
+            steeringDirection.y = transform.position.y;
+            Vector3 forceVector = (steeringDirection - transform.position).normalized;
+            GetComponent<Rigidbody>().AddForce(forceVector * Time.deltaTime * 1000f * movementSpeed);
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
 }

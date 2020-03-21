@@ -57,7 +57,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7456058545053811620}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalPosition: {x: 0, y: 1.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7456058546024357579}
@@ -273,7 +273,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7456058545198875856}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalPosition: {x: 0, y: 1.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7456058545153655863}
@@ -296,7 +296,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a61d7f782508591458275d8168e446a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 2
+  movementSpeed: 1
   leanSpeed: 3
   leanCurve:
     serializedVersion: 2
@@ -323,6 +323,14 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   mouseSensitivity: 90
+  hackableEnemy: {fileID: 0}
+  puzzleDestination: {x: 0, y: 0, z: 0}
+  isHacking: 0
+  currentPuzzle: {fileID: 0}
+  lerpingToPuzzle: 0
+  lerpTime: 0.2
+  currentTime: 0
+  startPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &7456058545829164154
 GameObject:
   m_ObjectHideFlags: 0
@@ -396,9 +404,9 @@ GameObject:
   - component: {fileID: 7456058546024357577}
   - component: {fileID: 7456058546024357582}
   - component: {fileID: 7456058546024357583}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -473,11 +481,11 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7456058546024357580}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: b9225c4e1d38cdd4a8c0fd1909c62f05, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.25
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &7456058546024357583
 Rigidbody:
@@ -488,7 +496,7 @@ Rigidbody:
   m_GameObject: {fileID: 7456058546024357580}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0.5
+  m_Drag: 1
   m_AngularDrag: 500
   m_UseGravity: 1
   m_IsKinematic: 0

@@ -76,7 +76,7 @@ public class RingPuzzle : Puzzle
             {
                 SetSelection(selectedIndex + 1);
             }
-             
+
             // Adjust rotation with left and right arrow keys
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
@@ -193,11 +193,5 @@ public class RingPuzzle : Puzzle
         isComplete = tempValid;
 
         transform.Find("Check").GetComponent<HologramFX>().showHologram = isComplete;
-    }
-
-    private void OnMouseEnter()
-    {
-        SetSelection(0);
-        Debug.Log("Mouse Enter");
     }
 }

@@ -323,6 +323,14 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   mouseSensitivity: 90
+  hackableEnemy: {fileID: 0}
+  puzzleDestination: {x: 0, y: 0, z: 0}
+  isHacking: 0
+  currentPuzzle: {fileID: 0}
+  lerpingToPuzzle: 0
+  lerpTime: 0.2
+  currentTime: 0
+  startPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &7456058545829164154
 GameObject:
   m_ObjectHideFlags: 0
@@ -398,7 +406,7 @@ GameObject:
   - component: {fileID: 7456058546024357583}
   m_Layer: 9
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

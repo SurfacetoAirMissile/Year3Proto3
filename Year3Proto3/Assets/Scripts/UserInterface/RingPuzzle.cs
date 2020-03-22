@@ -65,7 +65,7 @@ public class RingPuzzle : Puzzle
             holo.showHologram = !holo.showHologram;
         }
 
-        if (holo.showHologram)
+        if (holo.showHologram && !GameManager.Instance.playerControl)
         {
             // Change selection with up and down arrow keys
             if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -193,11 +193,5 @@ public class RingPuzzle : Puzzle
         isComplete = tempValid;
 
         transform.Find("Check").GetComponent<HologramFX>().showHologram = isComplete;
-    }
-
-    private void OnMouseEnter()
-    {
-        SetSelection(0);
-        Debug.Log("Mouse Enter");
     }
 }

@@ -43,7 +43,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 6, y: 1, z: 1}
+  m_Size: {x: 30, y: 1, z: 2}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &7119002841273784321
 MonoBehaviour:
@@ -86,7 +86,7 @@ Transform:
   m_GameObject: {fileID: 7119002842271892154}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 3.5, z: 0}
-  m_LocalScale: {x: 1, y: 6, z: 4}
+  m_LocalScale: {x: 0.1, y: 3, z: 2}
   m_Children:
   - {fileID: 7119002841273784320}
   m_Father: {fileID: 0}
@@ -164,4 +164,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e09ad3ab00c815a4e8be22aeb81d01b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  finalPosition: {x: 0, y: 3.5, z: 4}
+  doorCollider: {fileID: 7119002841273784321}

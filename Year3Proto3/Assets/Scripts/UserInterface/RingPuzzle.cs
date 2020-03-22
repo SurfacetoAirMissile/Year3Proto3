@@ -194,10 +194,4 @@ public class RingPuzzle : Puzzle
 
         transform.Find("Check").GetComponent<HologramFX>().showHologram = isComplete;
     }
-
-    private void OnMouseEnter()
-    {
-        SetSelection(0);
-        Debug.Log("Mouse Enter");
-    }
 }

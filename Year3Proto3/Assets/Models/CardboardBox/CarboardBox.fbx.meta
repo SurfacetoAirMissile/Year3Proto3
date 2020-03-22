@@ -1,107 +1,8 @@
 fileFormatVersion: 2
-guid: 6a3a3adae1f3844bdbb03aff7a7893e2
+guid: a76d28f610f7d52479d1d676ec2d4714
 ModelImporter:
   serializedVersion: 19300
-  internalIDToNameTable:
-  - first:
-      1: 100000
-    second: drywall_panel
-  - first:
-      1: 100002
-    second: ground
-  - first:
-      1: 100004
-    second: OSB_Panel
-  - first:
-      1: 100006
-    second: stud_frame
-  - first:
-      1: 100008
-    second: stud_pile
-  - first:
-      1: 100010
-    second: //RootNode
-  - first:
-      4: 400000
-    second: drywall_panel
-  - first:
-      4: 400002
-    second: ground
-  - first:
-      4: 400004
-    second: OSB_Panel
-  - first:
-      4: 400006
-    second: stud_frame
-  - first:
-      4: 400008
-    second: stud_pile
-  - first:
-      4: 400010
-    second: //RootNode
-  - first:
-      21: 2100000
-    second: mat_wood_Plywood
-  - first:
-      21: 2100002
-    second: mat_concrete_cement
-  - first:
-      21: 2100004
-    second: nails
-  - first:
-      21: 2100006
-    second: drywall_painted
-  - first:
-      21: 2100008
-    second: drywall
-  - first:
-      21: 2100010
-    second: mat_wood_OSB
-  - first:
-      23: 2300000
-    second: drywall_panel
-  - first:
-      23: 2300002
-    second: ground
-  - first:
-      23: 2300004
-    second: OSB_Panel
-  - first:
-      23: 2300006
-    second: stud_frame
-  - first:
-      23: 2300008
-    second: stud_pile
-  - first:
-      33: 3300000
-    second: drywall_panel
-  - first:
-      33: 3300002
-    second: ground
-  - first:
-      33: 3300004
-    second: OSB_Panel
-  - first:
-      33: 3300006
-    second: stud_frame
-  - first:
-      33: 3300008
-    second: stud_pile
-  - first:
-      43: 4300000
-    second: stud_pile
-  - first:
-      43: 4300002
-    second: ground
-  - first:
-      43: 4300004
-    second: drywall_panel
-  - first:
-      43: 4300006
-    second: OSB_Panel
-  - first:
-      43: 4300008
-    second: stud_frame
+  internalIDToNameTable: []
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -139,11 +40,11 @@ ModelImporter:
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
     importVisibility: 1
-    importBlendShapes: 0
-    importCameras: 0
-    importLights: 0
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
     swapUVChannels: 0
-    generateSecondaryUV: 1
+    generateSecondaryUV: 0
     useFileUnits: 1
     keepQuads: 0
     weldVertices: 1
@@ -167,7 +68,7 @@ ModelImporter:
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
   referencedClips: []
-  importAnimation: 0
+  importAnimation: 1
   humanDescription:
     serializedVersion: 3
     human: []
@@ -186,7 +87,7 @@ ModelImporter:
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   autoGenerateAvatarMappingIfUnspecified: 1
-  animationType: 0
+  animationType: 2
   humanoidOversampling: 1
   avatarSetup: 0
   additionalBone: 0

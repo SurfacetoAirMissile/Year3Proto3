@@ -70,7 +70,7 @@ public class RingPuzzle : Puzzle
             // Adjust rotation with left and right arrow keys
             if (Input.GetKeyDown(KeyCode.LeftArrow)) SetRotation(-1);
             if (Input.GetKeyDown(KeyCode.RightArrow)) SetRotation(1);
-          
+
 
             if (Input.GetKeyDown(KeyCode.R)) InitializePuzzle();
             if (Input.GetKeyDown(KeyCode.M))
@@ -139,7 +139,7 @@ public class RingPuzzle : Puzzle
             // Wrap around
             if (ring[i].rotationState < 0) ring[i].rotationState = (Rings.RotationState)stateCount - 1;
             if (ring[i].rotationState > (Rings.RotationState)stateCount - 1) ring[i].rotationState = 0;
-            
+
 
             // Tween to rotation
             float targerRot = (float)ring[i].rotationState * 45.0f;
@@ -166,11 +166,5 @@ public class RingPuzzle : Puzzle
         isComplete = tempValid;
 
         transform.Find("Check").GetComponent<HologramFX>().showHologram = isComplete;
-    }
-
-    private void OnMouseEnter()
-    {
-        SetSelection(0);
-        Debug.Log("Mouse Enter");
     }
 }

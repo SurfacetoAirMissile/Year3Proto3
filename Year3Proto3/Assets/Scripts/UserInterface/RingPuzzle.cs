@@ -60,38 +60,19 @@ public class RingPuzzle : Puzzle
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            holo.showHologram = !holo.showHologram;
-        }
-
         if (holo.showHologram && !GameManager.Instance.playerControl)
         {
             // Change selection with up and down arrow keys
-            if (Input.GetKeyDown(KeyCode.UpArrow))
-            {
-                SetSelection(selectedIndex - 1);
-            }
-            if (Input.GetKeyDown(KeyCode.DownArrow))
-            {
-                SetSelection(selectedIndex + 1);
-            }
-             
+            if (Input.GetKeyDown(KeyCode.UpArrow)) SetSelection(selectedIndex - 1);
+            if (Input.GetKeyDown(KeyCode.DownArrow)) SetSelection(selectedIndex + 1);
+
+
             // Adjust rotation with left and right arrow keys
-            if (Input.GetKeyDown(KeyCode.LeftArrow))
-            {
-                SetRotation(-1);
-            }
-            if (Input.GetKeyDown(KeyCode.RightArrow))
-            {
-                SetRotation(1);
-            }
+            if (Input.GetKeyDown(KeyCode.LeftArrow)) SetRotation(-1);
+            if (Input.GetKeyDown(KeyCode.RightArrow)) SetRotation(1);
+          
 
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                InitializePuzzle();
-            }
-
+            if (Input.GetKeyDown(KeyCode.R)) InitializePuzzle();
             if (Input.GetKeyDown(KeyCode.M))
             {
                 multiMode = !multiMode;
@@ -153,20 +134,12 @@ public class RingPuzzle : Puzzle
         for (int i = 0; i < ringCount; i++)
         {
             // Rotate all rings that are selected
-            if (ring[i].isSelected)
-            {
-                ring[i].rotationState += rot;
-            }
+            if (ring[i].isSelected) ring[i].rotationState += rot;
 
             // Wrap around
-            if (ring[i].rotationState < 0)
-            {
-                ring[i].rotationState = (Rings.RotationState)stateCount - 1;
-            }
-            if (ring[i].rotationState > (Rings.RotationState)stateCount - 1)
-            {
-                ring[i].rotationState = 0;
-            }
+            if (ring[i].rotationState < 0) ring[i].rotationState = (Rings.RotationState)stateCount - 1;
+            if (ring[i].rotationState > (Rings.RotationState)stateCount - 1) ring[i].rotationState = 0;
+            
 
             // Tween to rotation
             float targerRot = (float)ring[i].rotationState * 45.0f;

@@ -25,7 +25,10 @@ public class PlayerController : MonoBehaviour
     private KeyCode rightKey = KeyCode.D;
     private string mouseXInputName = "Mouse X", mouseYInputName = "Mouse Y";
     private float cameraPitch = 0f;
+
     public Enemy hackableEnemy = null;
+    public Door hackableDoor = null;
+
     public Vector3 puzzleDestination = Vector3.zero;
     public bool isHacking = false;
     public Puzzle currentPuzzle;
@@ -86,7 +89,7 @@ public class PlayerController : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                playerRB.AddForce(Vector3.up * 200f);
+                playerRB.AddForce(Vector3.up * 400f);
             }
         }
         else
@@ -109,9 +112,20 @@ public class PlayerController : MonoBehaviour
                 if (currentPuzzle.Validate())
                 {
                     StartCoroutine(WaitForAnimation());
-                    hackableEnemy.ChangeState(Enemy.AIState.deactivated);
-                    hackableEnemy.isBeingHacked = false;
-                    hackableEnemy = null;
+                    if (hackableEnemy)
+                    {
+                        if (hackableEnemy.isBeingHacked)
+                        {
+                            hackableEnemy.ChangeState(Enemy.AIState.deactivated);
+                            hackableEnemy.isBeingHacked = false;
+                            hackableEnemy = null;
+                        }
+                    }
+                    if (hackableDoor)
+                    {
+                        hackableDoor.ToggleDoorOpen();
+                        hackableDoor = null;
+                    }
                     isHacking = false;
                     GameManager.Instance.playerControl = true;
                 }
@@ -199,14 +213,22 @@ public class PlayerController : MonoBehaviour
             GameManager.Instance.playerControl = false;
             hackableEnemy.isBeingHacked = true;
         }
+        else if (hackableDoor && !isHacking)
+        {
+            currentTime = 0f;
+            startPosition = transform.parent.position;
+            lerpingToPuzzle = true;
+            GameManager.Instance.playerControl = false;
+        }
     }
 
     void StartHack()
     {
-        currentPuzzle = Instantiate(GameManager.Instance.ringPuzzle).GetComponent<Puzzle>();
-        currentPuzzle.transform.position = transform.position + (transform.forward * 0.6f);
-        currentPuzzle.GetComponentInChildren<HologramFX>().showHologram = true;
-        currentPuzzle.transform.LookAt(transform);
+        currentPuzzle = Instantiate(GameManager.Instance.ringPuzzle).GetComponentInChildren<Puzzle>();
+        currentPuzzle.transform.parent.position = transform.position + (transform.forward * 0.4f);
+        currentPuzzle.transform.parent.GetComponent<RectTransform>().localScale = new Vector3(0.5f, 0.5f);
+        currentPuzzle.GetComponent<HologramFX>().showHologram = true;
+        currentPuzzle.transform.parent.LookAt(transform);
         isHacking = true;
         lerpingToPuzzle = false;
     }

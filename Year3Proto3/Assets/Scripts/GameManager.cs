@@ -13,6 +13,13 @@ public class GameManager : MonoBehaviour
         else { instance = this; }
     }
 
+    /*
+    public GameObject CreatePuzzle()
+    {
+
+    }
+    */
+
     public bool playerControl = true;
     public GameObject ringPuzzle;
 
@@ -25,9 +32,9 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
+        /*if (Input.GetKeyDown(KeyCode.P))
         {
             playerControl = !playerControl;
-        }
+        }*/
     }
 }

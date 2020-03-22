@@ -41,7 +41,7 @@ public class DotPuzzle : Puzzle
 
     private void Update()
     {
-        if (holo.showHologram) //&& !GameManager.Instance.playerControl)
+        if (holo.showHologram && !GameManager.Instance.playerControl)
         {
             // Change selection with up and down arrow keys
             if (Input.GetKeyDown(KeyCode.UpArrow)) SetSelection(selectedIndex - 1);

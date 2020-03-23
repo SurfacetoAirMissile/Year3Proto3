@@ -76,7 +76,7 @@ public class DotPuzzle : Puzzle
             //Iterates through all the dots inside of the box.
             for (int j = boxes[i].boxObject.transform.childCount - 1;  j >= 0 ; j--)
             {
-                // Sets the box images based on the final dot count.
+                // Sets the box images based on the dot count.
                 Transform dot = boxes[i].boxObject.transform.GetChild(j);
                 Image image = dot.GetComponent<Image>();
                 image.sprite = (j < boxes[i].finalDots) ? dotFull : dotEmpty;
@@ -85,19 +85,25 @@ public class DotPuzzle : Puzzle
             } 
         }
 
-        SetSelection(0);
+        StartCoroutine(showSelection());
     }
 
     IEnumerator hide(Image image)
     {
         yield return new WaitForSeconds(3);
 
-        image.DOFade(0.0f, 3.0f).OnComplete(()=> {
+        image.DOFade(0.0f, 2.0f).OnComplete(()=> {
             Color color = image.color;
             color.a = 1.0f;
             image.color = color;
             image.sprite = dotEmpty;
         });
+    }
+    IEnumerator showSelection()
+    {
+        yield return new WaitForSeconds(5);
+
+        SetSelection(0);
     }
 
     private void SetSelection(int index)

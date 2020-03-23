@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class PlayerController : MonoBehaviour
 {
@@ -37,6 +38,32 @@ public class PlayerController : MonoBehaviour
     public float currentTime = 0.0f;
     public Vector3 startPosition = Vector3.zero;
 
+    public GameObject physicsObject;
+    public Vector3[] lastFramePositions;
+
+    public Vector3 GetPhysicsVelocity()
+    {
+        float timeScale = 1f / Time.fixedDeltaTime;
+        // Each frame we step back, the velocity has less relevance on the velocity calculated.
+        Vector3 sum = (physicsObject.transform.position - lastFramePositions[0]) * 5f;
+        for (int i = 0; i < 4; i++)
+        {
+            Vector3 difference = (lastFramePositions[i] - lastFramePositions[i + 1]) * (4 - i);
+            sum += difference;
+        }
+        // 15 = 5 + 4 + 3 + 2 + 1
+        return (sum / 15f) * timeScale;
+    }
+
+    public void UpdatePhysicsFrames(Vector3 _lastFramePosition)
+    {
+        lastFramePositions[4] = lastFramePositions[3];
+        lastFramePositions[3] = lastFramePositions[2];
+        lastFramePositions[2] = lastFramePositions[1];
+        lastFramePositions[1] = lastFramePositions[0];
+        lastFramePositions[0] = _lastFramePosition;
+    }
+
     // I'm using Awake for initialization of variables.
     // Awake is called on creation of the object (before Start)
     private void Awake()
@@ -56,6 +83,7 @@ public class PlayerController : MonoBehaviour
         rightLeanAmount = 0f; leftLeanAmount = 0f; frontLeanAmount = 0f; backLeanAmount = 0f;
         // initialize Player Rigidbody
         playerRB = transform.parent.GetComponent<Rigidbody>();
+        lastFramePositions = new Vector3[5] { Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero };
     }
 
     // Start is called before the first frame update
@@ -69,6 +97,19 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(0.50f);
         currentPuzzle.GetComponent<HologramFX>().showHologram = false;
         currentPuzzle = null;
+    }
+
+    private void FixedUpdate()
+    {
+        if (physicsObject)
+        {
+            UpdatePhysicsFrames(physicsObject.transform.position);
+            Vector3 targetPos = Camera.main.transform.position + (Camera.main.transform.forward * 2f);
+            physicsObject.transform.position = targetPos;
+            Rigidbody rigid = physicsObject.GetComponent<Rigidbody>();
+            rigid.velocity = Vector3.zero;
+            rigid.angularVelocity = Vector3.zero;
+        }
     }
 
     // Update is called once per frame
@@ -90,6 +131,29 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 playerRB.AddForce(Vector3.up * 400f);
+            }
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                // Raycast to find a physics object and try to pick it up
+                //physicsObject
+                if (!physicsObject)
+                {
+                    if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit raycastHit, 2f))
+                    {
+                        if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("PhysicsObject"))
+                        {
+                            physicsObject = raycastHit.transform.gameObject;
+                            physicsObject.GetComponent<Rigidbody>().useGravity = false;
+                        }
+                    }
+                }
+                else
+                {
+                    Rigidbody rigid = physicsObject.GetComponent<Rigidbody>();
+                    rigid.useGravity = true;
+                    rigid.velocity = GetPhysicsVelocity();
+                    physicsObject = null;
+                }
             }
         }
         else
@@ -118,6 +182,7 @@ public class PlayerController : MonoBehaviour
                         {
                             hackableEnemy.ChangeState(Enemy.AIState.deactivated);
                             hackableEnemy.isBeingHacked = false;
+                            hackableEnemy.transform.GetChild(2).GetComponent<AudioSource>().DOFade(0f, 0.25f);
                             hackableEnemy = null;
                         }
                     }

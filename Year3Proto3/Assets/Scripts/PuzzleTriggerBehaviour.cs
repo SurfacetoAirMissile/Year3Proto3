@@ -8,6 +8,7 @@ public class PuzzleTriggerBehaviour : MonoBehaviour
     private bool isEnemy;
     private Enemy enemy;
     // Start is called before the first frame update
+
     void Start()
     {
         if (isEnemy)

@@ -155,6 +155,17 @@ public class PlayerController : MonoBehaviour
                     physicsObject = null;
                 }
             }
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (physicsObject)
+                {
+                    Rigidbody rigid = physicsObject.GetComponent<Rigidbody>();
+                    rigid.useGravity = true;
+                    rigid.velocity = GetPhysicsVelocity();
+                    rigid.AddForce(Camera.main.transform.forward * 100f);
+                    physicsObject = null;
+                }
+            }
         }
         else
         {
@@ -180,7 +191,7 @@ public class PlayerController : MonoBehaviour
                     {
                         if (hackableEnemy.isBeingHacked)
                         {
-                            hackableEnemy.ChangeState(Enemy.AIState.deactivated);
+                            hackableEnemy.SwitchState(Enemy.AIState.deactivated);
                             hackableEnemy.isBeingHacked = false;
                             hackableEnemy.transform.GetChild(2).GetComponent<AudioSource>().DOFade(0f, 0.25f);
                             hackableEnemy = null;

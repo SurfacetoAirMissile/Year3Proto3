@@ -14,7 +14,7 @@ public class DoorCollider : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Player") enter = true;
+        //if (other.gameObject.tag == "Player") enter = true;
         if (!doorScript.isOpen())
         {
             if (other.gameObject.tag == "Player")

@@ -136,16 +136,25 @@ public class Enemy : MonoBehaviour
 
     private bool AwareOfPlayer()
     {
-        Vector3 direction = player.position - transform.position;
-        float angle = Vector3.Angle(direction, transform.forward);
-
-        if (angle >= (FOV * 0.5f)) return false;
-
-        if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit raycastHit, spottingDistance))
+        Vector3 directionToFeet = player.position - transform.GetChild(0).position;
+        float angleToFeet = Vector3.Angle(directionToFeet, transform.forward);
+        bool withinMaxAngleFeet = angleToFeet <= (FOV * 0.5f);
+        bool hitPlayerLayerFeet = false;
+        if (Physics.Raycast(transform.GetChild(0).position, directionToFeet.normalized, out RaycastHit raycastHit, spottingDistance))
         {
-            if (raycastHit.collider.gameObject.layer == kPlayerLayer) return true;
+            hitPlayerLayerFeet = raycastHit.collider.gameObject.layer == kPlayerLayer;
         }
-        return false;
+
+        Vector3 directionToHead = player.GetChild(0).position - transform.GetChild(0).position;
+        float angleToHead = Vector3.Angle(directionToHead, transform.forward);
+        bool withinMaxAngleHead = angleToHead <= (FOV * 0.5f);
+        bool hitPlayerLayerHead = false;
+        if (Physics.Raycast(transform.GetChild(0).position, directionToHead.normalized, out raycastHit, spottingDistance))
+        {
+            hitPlayerLayerHead = raycastHit.collider.gameObject.layer == kPlayerLayer;
+        }
+
+        return (hitPlayerLayerFeet && withinMaxAngleFeet) || (hitPlayerLayerHead && withinMaxAngleHead);
     }
 
     private void Update()
@@ -174,7 +183,7 @@ public class Enemy : MonoBehaviour
     {
         float distance = Vector3.Distance(transform.position, currentStateObject.guard.standPosition);
         // If the point that the enemy needs to stand at is further than 0.25m away...
-        if (distance > 0.25f)
+        if (distance > 0.05f)
         {
             // Move the Enemy towards where the NavMesh wants to go.
             Vector3 steeringDirection = agent.steeringTarget;
@@ -226,19 +235,19 @@ public class Enemy : MonoBehaviour
     void DeactivateLights()
     {
         // Set the colours and switch off the light.
-        transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_EmissiveColor", Color.gray);
-        transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.gray);
-        transform.GetChild(0).GetChild(1).GetComponent<Light>().enabled = false;
+        transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_EmissiveColor", Color.gray);
+        transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.gray);
+        transform.GetChild(1).GetComponent<Light>().enabled = false;
         lightsActive = false;
     }
 
     void ActivateLights(Color _colour)
     {
         // Set the colours and switch on the light.
-        transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_EmissiveColor", _colour);
-        transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", _colour);
-        transform.GetChild(0).GetChild(1).GetComponent<Light>().enabled = true;
-        transform.GetChild(0).GetChild(1).GetComponent<Light>().color = _colour;
+        transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_EmissiveColor", _colour);
+        transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", _colour);
+        transform.GetChild(1).GetComponent<Light>().enabled = true;
+        transform.GetChild(1).GetComponent<Light>().color = _colour;
         lightsActive = true;
     }
 
@@ -270,7 +279,7 @@ public class Enemy : MonoBehaviour
         target.y = transform.position.y;
         float distance = Vector3.Distance(transform.position, target);
         // If the point that the enemy needs to stand at is further than 0.25m away...
-        if (distance > 0.25f)
+        if (distance > 0.05f)
         {
             // Rotate the guard towards the position they need to watch.
             Vector3 lookTarget = currentStateObject.patrol.points[currentPoint].point;

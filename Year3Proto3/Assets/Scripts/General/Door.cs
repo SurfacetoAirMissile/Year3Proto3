@@ -8,9 +8,10 @@ public class Door : MonoBehaviour
     public DoorCollider doorCollider;
      
     private Vector3 initialPosition;
+    private RingPuzzle finalPuzzle;
 
     private bool open = false;
-    private bool interact = true;
+    //private bool interact = true;
 
     private void Start()
     {
@@ -18,19 +19,30 @@ public class Door : MonoBehaviour
     }
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.E) && interact && doorCollider.HasEntered())
+        /*if(Input.GetKeyDown(KeyCode.E) && interact && doorCollider.HasEntered())
         {
-            Vector3 position = new Vector3(0.0f, 0.0f, transform.localScale.z);
+            ToggleDoorOpen();
+        }*/
+    }
 
-            interact = false;
+    public void ToggleDoorOpen()
+    {
+        Vector3 position = new Vector3(0.0f, 0.0f, transform.localScale.z);
 
-            transform.DOKill(false);
-            transform.DOLocalMove((open) ? initialPosition : (transform.rotation * position) + initialPosition, 1.2f)
-                .SetEase(Ease.OutQuint)
-                .OnComplete(() => {
-                    open = (open) ? false : true;
-                    interact = true;
-                });
-        }
+        //interact = false;
+
+        transform.DOKill(false);
+        transform.DOLocalMove((open) ? initialPosition : (transform.rotation * position) + initialPosition, 1.2f)
+            .SetEase(Ease.OutQuint)
+            .OnComplete(() => {
+                open = (open) ? false : true;
+                //interact = true;
+            });
+    }
+
+    public bool isOpen()
+    {
+        return open;
     }
 }
+

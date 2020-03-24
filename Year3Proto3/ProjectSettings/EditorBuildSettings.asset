@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SamCopy2/SamCopy2.unity
-    guid: ce72bea60bbb38c4b8bed70123ca8a78
+    path: Assets/Scenes/SamCopy3/SamCopy3.unity
+    guid: 4dcfccc61142b5a4f80b75832ddb3159
   m_configObjects: {}

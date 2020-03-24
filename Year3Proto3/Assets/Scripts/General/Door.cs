@@ -8,6 +8,7 @@ public class Door : MonoBehaviour
     public DoorCollider doorCollider;
      
     private Vector3 initialPosition;
+    private RingPuzzle finalPuzzle;
 
     private bool open = false;
     //private bool interact = true;

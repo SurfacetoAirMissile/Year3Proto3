@@ -13,20 +13,32 @@ public class GameManager : MonoBehaviour
         else { instance = this; }
     }
 
-    /*
-    public GameObject CreatePuzzle()
+    public enum PuzzleID
     {
-
+        ring,
+        dot,
+        random,
     }
-    */
+
+    private List<GameObject> puzzles;
 
     public bool playerControl = true;
-    public GameObject ringPuzzle;
+    //public GameObject ringPuzzle;
 
+    public GameObject CreatePuzzle(PuzzleID _puzzle = PuzzleID.random)
+    {
+        if (_puzzle == PuzzleID.random)
+        {
+            return puzzles[Random.Range(0, puzzles.Count)];
+        }
+        else return puzzles[(int)_puzzle];
+    }
     // Start is called before the first frame update
     void Start()
     {
-        ringPuzzle = Resources.Load("Puzzles/RingPuzzle") as GameObject;
+        puzzles = new List<GameObject>();
+        puzzles.Add(Resources.Load("Puzzles/RingPuzzle") as GameObject);
+        puzzles.Add(Resources.Load("Puzzles/DotPuzzle") as GameObject);
     }
 
     // Update is called once per frame

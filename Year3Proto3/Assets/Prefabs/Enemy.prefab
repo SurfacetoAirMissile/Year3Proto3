@@ -76,7 +76,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FOV: 50
   spottingDistance: 40
-  movementSpeed: 1.8
+  movementSpeed: 20
   normalColour: {r: 0, g: 0.82210016, b: 1, a: 1}
   spottedColour: {r: 1, g: 0, b: 0, a: 1}
   startState: 0
@@ -88,6 +88,10 @@ MonoBehaviour:
       watchPosition: {x: -8, y: 1, z: -3}
   startPath: {fileID: 0}
   isBeingHacked: 0
+  investigationTarget: {x: 0, y: 0, z: 0}
+  canGetToInvestigateTarget: 0
+  investigateTimer: 0
+  investigationTime: 5
 --- !u!54 &4893769925331197435
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -97,7 +101,7 @@ Rigidbody:
   m_GameObject: {fileID: 4893769925331197426}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 3
+  m_Drag: 2
   m_AngularDrag: 500
   m_UseGravity: 1
   m_IsKinematic: 0

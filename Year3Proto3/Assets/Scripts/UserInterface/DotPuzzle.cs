@@ -13,7 +13,7 @@ public class DotPuzzle : Puzzle
     public Sprite dotFull;
 
     private int selectedIndex;
-
+    private bool waitDone;
 
     [System.Serializable]
     public struct Box
@@ -35,13 +35,13 @@ public class DotPuzzle : Puzzle
     {
         holo = GetComponent<HologramFX>();
         holo.showHologram = true;
-
+        waitDone = false;
         InitializePuzzle();
     }
 
     private void Update()
     {
-        if (holo.showHologram && !GameManager.Instance.playerControl)
+        if (holo.showHologram && !GameManager.Instance.playerControl && waitDone)
         {
             // Change selection with up and down arrow keys
             if (Input.GetKeyDown(KeyCode.UpArrow)) SetSelection(selectedIndex - 1);
@@ -102,7 +102,7 @@ public class DotPuzzle : Puzzle
     IEnumerator showSelection()
     {
         yield return new WaitForSeconds(5);
-
+        waitDone = true;
         SetSelection(0);
     }
 
@@ -172,6 +172,7 @@ public class DotPuzzle : Puzzle
         }
 
         transform.Find("Check").GetComponent<HologramFX>().showHologram = valid;
+
         isComplete = valid;
     }
 }

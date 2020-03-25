@@ -13,6 +13,7 @@ public class Enemy : MonoBehaviour
     {
         watch,
         patrol,
+        investigate,
         deactivated
     }
 
@@ -68,17 +69,17 @@ public class Enemy : MonoBehaviour
     private Transform player;
     private NavMeshAgent agent;
     private AIState currentState;
+    private AIState previousState;
     private StateObject currentStateObject;
     private bool lightsActive;
     //private bool seenTarget;
     private int currentPoint;
     private float currentPointTime;
     public bool isBeingHacked;
-
-    public void ChangeState(AIState _newState)
-    {
-        currentState = _newState;
-    }
+    private Vector3 investigationTarget;
+    private bool canGetToInvestigateTarget;
+    private float investigateTimer;
+    private float investigationTime;
 
     private void Start()
     {
@@ -101,6 +102,10 @@ public class Enemy : MonoBehaviour
         lightsActive = true;
         currentPointTime = 0f;
         currentPoint = 0;
+        investigationTarget = Vector3.zero;
+        canGetToInvestigateTarget = false;
+        investigateTimer = 0f;
+        investigationTime = 5f;
     }
 
     /*
@@ -134,6 +139,24 @@ public class Enemy : MonoBehaviour
     }
     */
 
+    public void InvestigateTarget(Vector3 _Target)
+    {
+        if (currentState != AIState.investigate)
+        {
+            previousState = currentState;
+            SwitchState(AIState.investigate);
+        }
+        NavMeshPath path = new NavMeshPath();
+        _Target.y = transform.position.y;
+        investigationTarget = _Target;
+        investigateTimer = 0f;
+        canGetToInvestigateTarget = agent.CalculatePath(_Target, path);
+        if (canGetToInvestigateTarget)
+        {
+            agent.SetDestination(_Target);
+        }
+    }
+
     private bool AwareOfPlayer()
     {
         Vector3 directionToFeet = player.position - transform.GetChild(0).position;
@@ -157,7 +180,7 @@ public class Enemy : MonoBehaviour
         return (hitPlayerLayerFeet && withinMaxAngleFeet) || (hitPlayerLayerHead && withinMaxAngleHead);
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         agent.nextPosition = transform.position;
         if (!isBeingHacked)
@@ -172,8 +195,11 @@ public class Enemy : MonoBehaviour
                     CheckPlayerSpotted();
                     PatrolUpdate();
                     break;
+                case AIState.investigate:
+                    CheckPlayerSpotted();
+                    InvestigateUpdate();
+                    break;
                 case AIState.deactivated:
-                    if (lightsActive) { DeactivateLights(); }
                     break;
             }
         }
@@ -183,14 +209,20 @@ public class Enemy : MonoBehaviour
     {
         float distance = Vector3.Distance(transform.position, currentStateObject.guard.standPosition);
         // If the point that the enemy needs to stand at is further than 0.25m away...
-        if (distance > 0.05f)
+        if (distance > 0.25f)
         {
             // Move the Enemy towards where the NavMesh wants to go.
             Vector3 steeringDirection = agent.steeringTarget;
             steeringDirection.y = transform.position.y;
             Vector3 difference = (steeringDirection - transform.position) * 4f;
             Vector3 forceVector = difference.magnitude > 1 ? difference.normalized : difference;
-            GetComponent<Rigidbody>().AddForce(forceVector * Time.deltaTime * 1000f * movementSpeed);
+            GetComponent<Rigidbody>().AddForce(forceVector * movementSpeed);
+
+            // Look where you are going.
+            Vector3 lookTarget = agent.steeringTarget;
+            lookTarget.y = transform.position.y;
+            Vector3 lookDirection = lookTarget - transform.position;
+            transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 250 * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
         }
         else // If the point is not 0.25m away...
         {
@@ -198,7 +230,7 @@ public class Enemy : MonoBehaviour
             Vector3 lookTarget = currentStateObject.guard.watchPosition;
             lookTarget.y = transform.position.y;
             Vector3 lookDirection = lookTarget - transform.position;
-            transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 5 * Mathf.Deg2Rad, 0f);
+            transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 250 * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
         }
     }
 
@@ -214,6 +246,55 @@ public class Enemy : MonoBehaviour
                 currentPoint = GetNextPathPoint();
                 agent.SetDestination(currentStateObject.patrol.points[currentPoint].point);
             }
+        }
+    }
+
+    void InvestigateUpdate()
+    {
+        if (investigateTimer < investigationTime)
+        {
+            if (canGetToInvestigateTarget)
+            {
+                float distance = Vector3.Distance(transform.position, agent.destination);
+                // If the point that the enemy needs to stand at is further than 0.25m away...
+                if (distance > 2f)
+                {
+                    // Move the Enemy towards where the NavMesh wants to go.
+                    Vector3 steeringDirection = agent.steeringTarget;
+                    steeringDirection.y = transform.position.y;
+                    Vector3 difference = (steeringDirection - transform.position) * 4f;
+                    Vector3 forceVector = difference.magnitude > 1 ? difference.normalized : difference;
+                    GetComponent<Rigidbody>().AddForce(forceVector * movementSpeed);
+
+                    // Look where you are going.
+                    Vector3 lookTarget = agent.steeringTarget;
+                    lookTarget.y = transform.position.y;
+                    Vector3 lookDirection = lookTarget - transform.position;
+                    transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 250 * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
+                }
+                else // If the point is not 2m away...
+                {
+                    // Rotate the guard towards the position they need to watch.
+                    Vector3 lookTarget = agent.destination;
+                    lookTarget.y = transform.position.y;
+                    Vector3 lookDirection = lookTarget - transform.position;
+                    transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 250 * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
+                    investigateTimer += Time.fixedDeltaTime;
+                }
+            }
+            else
+            {
+                // Rotate the guard towards the position they need to watch.
+                Vector3 lookTarget = investigationTarget;
+                lookTarget.y = transform.position.y;
+                Vector3 lookDirection = lookTarget - transform.position;
+                transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 250 * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
+                investigateTimer += Time.fixedDeltaTime;
+            }
+        }
+        else
+        {
+            SwitchState(previousState);
         }
     }
 
@@ -273,13 +354,34 @@ public class Enemy : MonoBehaviour
         else return currentPoint + 1;
     }
 
+    public void SwitchState(AIState _newState)
+    {
+        currentState = _newState;
+        switch (_newState)
+        {
+            case AIState.watch:
+                agent.SetDestination(currentStateObject.guard.standPosition);
+                break;
+            case AIState.patrol:
+                agent.SetDestination(currentStateObject.patrol.points[currentPoint].point);
+                break;
+            case AIState.investigate:
+                break;
+            case AIState.deactivated:
+                if (lightsActive) { DeactivateLights(); }
+                break;
+            default:
+                break;
+        }
+    }
+
     bool GoToCurrentPathPoint()
     {
         Vector3 target = currentStateObject.patrol.points[currentPoint].point;
         target.y = transform.position.y;
         float distance = Vector3.Distance(transform.position, target);
         // If the point that the enemy needs to stand at is further than 0.25m away...
-        if (distance > 0.05f)
+        if (distance > 0.25f)
         {
             // Rotate the guard towards the position they need to watch.
             Vector3 lookTarget = currentStateObject.patrol.points[currentPoint].point;
@@ -298,5 +400,10 @@ public class Enemy : MonoBehaviour
         {
             return true;
         }
+    }
+
+    public bool isActive()
+    {
+        return currentState != AIState.deactivated;
     }
 }

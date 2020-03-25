@@ -11104,16 +11104,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: FogEffect
       objectReference: {fileID: 0}
-    - target: {fileID: 3171785088241832782, guid: d69609f602173c546a17f733bdb838b2,
-        type: 3}
-      propertyPath: InitialModule.startColor.maxColor.r
-      value: 0.34
-      objectReference: {fileID: 0}
-    - target: {fileID: 3171785088241832782, guid: d69609f602173c546a17f733bdb838b2,
-        type: 3}
-      propertyPath: InitialModule.startColor.maxColor.g
-      value: 0.37818182
-      objectReference: {fileID: 0}
     - target: {fileID: 3171785088241832783, guid: d69609f602173c546a17f733bdb838b2,
         type: 3}
       propertyPath: m_LocalPosition.x

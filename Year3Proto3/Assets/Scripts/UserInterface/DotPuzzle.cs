@@ -172,5 +172,6 @@ public class DotPuzzle : Puzzle
         }
 
         transform.Find("Check").GetComponent<HologramFX>().showHologram = valid;
+        isComplete = valid;
     }
 }

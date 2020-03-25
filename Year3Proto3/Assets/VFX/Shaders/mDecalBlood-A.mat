@@ -232,7 +232,7 @@ Material:
     - _ZTestTransparent: 4
     - _ZWrite: 1
     m_Colors:
-    - Color_72F9A1BA: {r: 0.4, g: 0.050909076, b: 0.039999988, a: 1}
+    - Color_72F9A1BA: {r: 0.35, g: 0.062201075, b: 0.05249999, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}

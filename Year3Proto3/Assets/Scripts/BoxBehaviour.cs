@@ -12,12 +12,6 @@ public class BoxBehaviour : MonoBehaviour
         listeners = new List<Enemy>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void OnCollisionEnter(Collision collision)
     {
         if ((collision.impulse / Time.fixedDeltaTime).magnitude > 4f)
@@ -25,7 +19,10 @@ public class BoxBehaviour : MonoBehaviour
             GetComponent<AudioSource>().Play();
             foreach (Enemy enemy in listeners)
             {
-                enemy.InvestigateTarget(transform.position);
+                if (enemy.isActive())
+                {
+                    enemy.InvestigateTarget(transform.position);
+                }
             }
         }
     }

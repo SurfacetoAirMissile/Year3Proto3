@@ -41,6 +41,8 @@ public class PlayerController : MonoBehaviour
     public GameObject physicsObject;
     public Vector3[] lastFramePositions;
 
+    private int secondPuzzle;
+
     public Vector3 GetPhysicsVelocity()
     {
         float timeScale = 1f / Time.fixedDeltaTime;
@@ -84,6 +86,7 @@ public class PlayerController : MonoBehaviour
         // initialize Player Rigidbody
         playerRB = transform.parent.GetComponent<Rigidbody>();
         lastFramePositions = new Vector3[5] { Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero };
+        secondPuzzle = 2;
     }
 
     // Start is called before the first frame update
@@ -96,7 +99,14 @@ public class PlayerController : MonoBehaviour
     {
         yield return new WaitForSeconds(0.50f);
         currentPuzzle.GetComponent<HologramFX>().showHologram = false;
+        currentPuzzle.GetComponentInParent<DestroyMe>().Prime();
         currentPuzzle = null;
+    }
+
+    IEnumerator StartSecond()
+    {
+        yield return new WaitForSeconds(0.51f);
+        AttemptHack();
     }
 
     private void FixedUpdate()
@@ -179,7 +189,7 @@ public class PlayerController : MonoBehaviour
                 else
                 {
                     LerpToPuzzle(1f);
-                    StartHack();
+                    StartHack(hackableDoor);
                 }
             }
             if (isHacking)
@@ -189,21 +199,27 @@ public class PlayerController : MonoBehaviour
                     StartCoroutine(WaitForAnimation());
                     if (hackableEnemy)
                     {
-                        if (hackableEnemy.isBeingHacked)
+                        isHacking = false;
+                        if (secondPuzzle != 2)
+                        {
+                            StartCoroutine(StartSecond());
+                        }
+                        else
                         {
                             hackableEnemy.SwitchState(Enemy.AIState.deactivated);
                             hackableEnemy.isBeingHacked = false;
                             hackableEnemy.transform.GetChild(2).GetComponent<AudioSource>().DOFade(0f, 0.25f);
                             hackableEnemy = null;
+                            GameManager.Instance.playerControl = true;
                         }
                     }
                     if (hackableDoor)
                     {
                         hackableDoor.ToggleDoorOpen();
                         hackableDoor = null;
+                        isHacking = false;
+                        GameManager.Instance.playerControl = true;
                     }
-                    isHacking = false;
-                    GameManager.Instance.playerControl = true;
                 }
             }
         }
@@ -298,9 +314,26 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void StartHack()
+    void StartHack(bool _door)
     {
-        currentPuzzle = Instantiate(GameManager.Instance.ringPuzzle).GetComponentInChildren<Puzzle>();
+        if (_door)
+        {
+            currentPuzzle = Instantiate(GameManager.Instance.CreatePuzzle(GameManager.PuzzleID.ring)).GetComponentInChildren<Puzzle>();
+        }
+        else
+        {
+            if (secondPuzzle != 2)
+            {
+                currentPuzzle = Instantiate(GameManager.Instance.CreatePuzzle((GameManager.PuzzleID)secondPuzzle)).GetComponentInChildren<Puzzle>();
+                secondPuzzle = 2;
+            }
+            else
+            {
+                int puzzle = Random.Range(0, 2);
+                secondPuzzle = 1 - puzzle;
+                currentPuzzle = Instantiate(GameManager.Instance.CreatePuzzle((GameManager.PuzzleID)puzzle)).GetComponentInChildren<Puzzle>();
+            }
+        }
         currentPuzzle.transform.parent.position = transform.position + (transform.forward * 0.4f);
         currentPuzzle.transform.parent.GetComponent<RectTransform>().localScale = new Vector3(0.5f, 0.5f);
         currentPuzzle.GetComponent<HologramFX>().showHologram = true;
@@ -311,6 +344,7 @@ public class PlayerController : MonoBehaviour
 
     void LerpToPuzzle(float _amount)
     {
+        playerRB.velocity = Vector3.zero;
         Vector3 targetPosition = puzzleDestination;
         targetPosition.y = transform.parent.position.y;
         transform.parent.position = Vector3.Lerp(startPosition, targetPosition, _amount);

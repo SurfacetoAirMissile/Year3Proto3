@@ -149,6 +149,7 @@ public class Enemy : MonoBehaviour
         NavMeshPath path = new NavMeshPath();
         _Target.y = transform.position.y;
         investigationTarget = _Target;
+        investigateTimer = 0f;
         canGetToInvestigateTarget = agent.CalculatePath(_Target, path);
         if (canGetToInvestigateTarget)
         {
@@ -365,7 +366,6 @@ public class Enemy : MonoBehaviour
                 agent.SetDestination(currentStateObject.patrol.points[currentPoint].point);
                 break;
             case AIState.investigate:
-                investigateTimer = 0f;
                 break;
             case AIState.deactivated:
                 if (lightsActive) { DeactivateLights(); }
@@ -400,5 +400,10 @@ public class Enemy : MonoBehaviour
         {
             return true;
         }
+    }
+
+    public bool isActive()
+    {
+        return currentState != AIState.deactivated;
     }
 }

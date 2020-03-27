@@ -221,8 +221,8 @@ ParticleSystem:
     startColor:
       serializedVersion: 2
       minMaxState: 2
-      minColor: {r: 0.85294116, g: 0.9411765, b: 1, a: 0}
-      maxColor: {r: 0.85294116, g: 0.9411765, b: 1, a: 0.2}
+      minColor: {r: 0.74899995, g: 0.8982432, b: 1, a: 0}
+      maxColor: {r: 0.85294116, g: 0.9411765, b: 1, a: 0.101960786}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -4734,7 +4734,7 @@ ParticleSystemRenderer:
   m_RenderMode: 0
   m_SortMode: 3
   m_MinParticleSize: 0
-  m_MaxParticleSize: 1
+  m_MaxParticleSize: 10
   m_CameraVelocityScale: 0
   m_VelocityScale: 0
   m_LengthScale: 2

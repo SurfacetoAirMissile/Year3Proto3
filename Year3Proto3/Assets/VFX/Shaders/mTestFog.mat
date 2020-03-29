@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7342139645952559629
+--- !u!114 &-366406798878143064
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: mFog
+  m_Name: mTestFog
   m_Shader: {fileID: -6465566751694194690, guid: ad4ef91db89df4a4f8ccc0556c706eb5,
     type: 3}
   m_ShaderKeywords: _BLENDMODE_ALPHA _SURFACE_TYPE_TRANSPARENT
@@ -33,23 +33,24 @@ Material:
     RenderType: Transparent
   disabledShaderPasses:
   - TransparentBackface
+  - MOTIONVECTORS
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
     - Texture2D_2BDCCFE0:
-        m_Texture: {fileID: 2800000, guid: 9c3f7df123839394e943f1cb30e7a8ad, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_913E9C3:
-        m_Texture: {fileID: 2800000, guid: 8b8871c8262065645aa7995e1426480f, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_97E2D868:
-        m_Texture: {fileID: 2800000, guid: 38415f7a9c72e6c47b8053dd0fd85582, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_EC989194:
-        m_Texture: {fileID: 2800000, guid: 754aeb9359121a54fa52418245905f16, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _AnisotropyMap:
@@ -128,22 +129,6 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Texture2DAsset_26DE4B11_Out_0:
-        m_Texture: {fileID: 2800000, guid: 38415f7a9c72e6c47b8053dd0fd85582, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Texture2DAsset_42FDAEE1_Out_0:
-        m_Texture: {fileID: 2800000, guid: 8b8871c8262065645aa7995e1426480f, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Texture2DAsset_9965922F_Out_0:
-        m_Texture: {fileID: 2800000, guid: 9c3f7df123839394e943f1cb30e7a8ad, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Texture2DAsset_EE4FDCEF_Out_0:
-        m_Texture: {fileID: 2800000, guid: 754aeb9359121a54fa52418245905f16, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _ThicknessMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -154,9 +139,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - Vector1_22D84253: 1
-    - Vector1_A06F7E56: 0.2
-    - Vector1_B87C7AA0: 0.785
-    - Vector1_F7D15B21: 0
+    - Vector1_A06F7E56: 0
+    - Vector1_B87C7AA0: 0.6
+    - Vector1_F7D15B21: 0.01
     - Vector1_FA3AC67D: 1
     - _AORemapMax: 1
     - _AORemapMin: 0
@@ -278,9 +263,9 @@ Material:
     - _ZTestGBuffer: 4
     - _ZTestModeDistortion: 8
     - _ZTestTransparent: 4
-    - _ZWrite: 0
+    - _ZWrite: 1
     m_Colors:
-    - Vector2_42DF5322: {r: 0.035, g: 0.035, b: 0, a: 0}
+    - Vector2_42DF5322: {r: 0, g: 0, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}

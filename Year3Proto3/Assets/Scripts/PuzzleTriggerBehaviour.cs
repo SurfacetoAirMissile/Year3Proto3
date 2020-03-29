@@ -25,12 +25,15 @@ public class PuzzleTriggerBehaviour : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name.Contains("Player") && isEnemy)
+        if (GetComponentInParent<Enemy>().isActive())
         {
-            if (other.GetComponentInChildren<PlayerController>().hackableEnemy == null)
+            if (other.gameObject.name.Contains("Player") && isEnemy)
             {
-                other.GetComponentInChildren<PlayerController>().hackableEnemy = enemy;
-                other.GetComponentInChildren<PlayerController>().puzzleDestination = transform.position;
+                if (other.GetComponentInChildren<PlayerController>().hackableEnemy == null)
+                {
+                    other.GetComponentInChildren<PlayerController>().hackableEnemy = enemy;
+                    other.GetComponentInChildren<PlayerController>().puzzleDestination = transform.position;
+                }
             }
         }
     }

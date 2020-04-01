@@ -5,16 +5,29 @@ using UnityEngine;
 public class BoxBehaviour : MonoBehaviour
 {
     List<Enemy> listeners;
-
+    bool muted = true;
+    float muteTime = 0f;
     // Start is called before the first frame update
     void Start()
     {
         listeners = new List<Enemy>();
     }
 
+    private void Update()
+    {
+        if (muted)
+        {
+            muteTime += Time.deltaTime;
+            if (muteTime >= 1.5f)
+            {
+                muted = false;
+            }
+        }
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
-        if ((collision.impulse / Time.fixedDeltaTime).magnitude > 4f)
+        if ((collision.impulse / Time.fixedDeltaTime).magnitude > 12f && !muted)
         {
             GetComponent<AudioSource>().Play();
             foreach (Enemy enemy in listeners)

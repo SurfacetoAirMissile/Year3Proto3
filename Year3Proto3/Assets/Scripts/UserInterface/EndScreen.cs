@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using DG.Tweening;
 using TMPro;
-using DG.Tweening;
+using UnityEngine;
 
 public class EndScreen : MonoBehaviour
 {
@@ -12,8 +10,16 @@ public class EndScreen : MonoBehaviour
     private bool showStartMessage = true;
     private TMP_Text startText;
 
-    void Start()
+    private bool showingWin;
+    private CanvasGroup winScreenPanel;
+    private CanvasGroup winScreenText;
+    public float winQuitDelay = 8.0f;
+    public float winTimer;
+    private bool winQuitStarted;
+
+    private void Start()
     {
+        transform.Find("StartText").GetComponent<CanvasGroup>().alpha = 1.0f;
         startText = transform.Find("StartText").GetComponent<TMP_Text>();
 
         if (GlobalData.deathCount < startMessage.Length)
@@ -25,13 +31,13 @@ public class EndScreen : MonoBehaviour
             startText.text = startMessage[startMessage.Length - 1];
         }
 
-        Debug.Log(startText.text.Length);
-
         startMessageTimer = startMessageTime * (startText.text.Length * 0.01f);
+
+        winScreenPanel = transform.Find("WinScreen").GetComponent<CanvasGroup>();
+        winScreenText = transform.Find("WinScreen/WinText").GetComponent<CanvasGroup>();
     }
 
-
-    void Update()
+    private void Update()
     {
         if (showStartMessage)
         {
@@ -42,6 +48,36 @@ public class EndScreen : MonoBehaviour
         {
             startText.GetComponent<CanvasGroup>().DOFade(0.0f, 2.0f);
             showStartMessage = false;
+        }
+
+        if (showingWin)
+        {
+            winTimer += Time.deltaTime;
+
+            if (winTimer >= winQuitDelay && !winQuitStarted)
+            {
+                FindObjectOfType<SceneSwitcher>().SceneSwitch("TitleScreen");
+                winQuitStarted = true;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            ShowWinScreen();
+        }
+    }
+
+    public void ShowWinScreen()
+    {
+        if (!showingWin)
+        {
+            Sequence winSequence = DOTween.Sequence();
+            winSequence.Append(winScreenPanel.DOFade(1.0f, 2.0f).SetEase(Ease.InOutSine));
+            winSequence.Append(winScreenText.DOFade(1.0f, 1.5f).SetEase(Ease.InOutSine));
+
+            winSequence.Play();
+
+            showingWin = true;
         }
     }
 }

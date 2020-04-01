@@ -33,7 +33,7 @@ public class Enemy : MonoBehaviour
     [Serializable]
     struct PathPoint
     {
-        public Vector3 point;
+        public Watch point;
         public float waitTime;
     }
 
@@ -88,17 +88,17 @@ public class Enemy : MonoBehaviour
         currentStateObject = startStateObject;
         player = GameObject.Find("Player").transform;
         agent = GetComponent<NavMeshAgent>();
-        agent.updatePosition = false;
+        //agent.updatePosition = false;
         if (startState == AIState.patrol)
         {
             currentStateObject.patrol = ConvertPathObject(startPath);
-            agent.SetDestination(currentStateObject.patrol.points[currentPoint].point);
+            agent.SetDestination(currentStateObject.patrol.points[currentPoint].point.standPosition);
         }
         else
         {
             agent.SetDestination(currentStateObject.guard.standPosition);
         }
-        agent.isStopped = true;
+        //agent.isStopped = true;
         lightsActive = true;
         currentPointTime = 0f;
         currentPoint = 0;
@@ -147,13 +147,15 @@ public class Enemy : MonoBehaviour
             SwitchState(AIState.investigate);
         }
         NavMeshPath path = new NavMeshPath();
-        _Target.y = transform.position.y;
         investigationTarget = _Target;
         investigateTimer = 0f;
-        canGetToInvestigateTarget = agent.CalculatePath(_Target, path);
-        if (canGetToInvestigateTarget)
+        if (NavMesh.SamplePosition(_Target, out NavMeshHit hit, 2f, NavMesh.AllAreas))
         {
-            agent.SetDestination(_Target);
+            canGetToInvestigateTarget = agent.CalculatePath(hit.position, path);
+            if (canGetToInvestigateTarget)
+            {
+                agent.SetDestination(_Target);
+            }
         }
     }
 
@@ -182,7 +184,7 @@ public class Enemy : MonoBehaviour
 
     private void FixedUpdate()
     {
-        agent.nextPosition = transform.position;
+        //agent.nextPosition = transform.position;
         if (!isBeingHacked)
         {
             switch (currentState)
@@ -203,6 +205,12 @@ public class Enemy : MonoBehaviour
                     break;
             }
         }
+        else
+        {
+            agent.isStopped = true;
+            agent.updatePosition = false;
+            agent.updateRotation = false;
+        }
     }
 
     void GuardUpdate()
@@ -216,13 +224,14 @@ public class Enemy : MonoBehaviour
             steeringDirection.y = transform.position.y;
             Vector3 difference = (steeringDirection - transform.position) * 4f;
             Vector3 forceVector = difference.magnitude > 1 ? difference.normalized : difference;
-            GetComponent<Rigidbody>().AddForce(forceVector * movementSpeed);
+            //GetComponent<Rigidbody>().AddForce(forceVector * movementSpeed);
 
             // Look where you are going.
             Vector3 lookTarget = agent.steeringTarget;
             lookTarget.y = transform.position.y;
             Vector3 lookDirection = lookTarget - transform.position;
             transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 250 * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
+            agent.isStopped = false;
         }
         else // If the point is not 0.25m away...
         {
@@ -231,6 +240,7 @@ public class Enemy : MonoBehaviour
             lookTarget.y = transform.position.y;
             Vector3 lookDirection = lookTarget - transform.position;
             transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 250 * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
+            agent.isStopped = true;
         }
     }
 
@@ -244,7 +254,7 @@ public class Enemy : MonoBehaviour
             {
                 currentPointTime = 0f;
                 currentPoint = GetNextPathPoint();
-                agent.SetDestination(currentStateObject.patrol.points[currentPoint].point);
+                agent.SetDestination(currentStateObject.patrol.points[currentPoint].point.standPosition);
             }
         }
     }
@@ -260,17 +270,18 @@ public class Enemy : MonoBehaviour
                 if (distance > 2f)
                 {
                     // Move the Enemy towards where the NavMesh wants to go.
-                    Vector3 steeringDirection = agent.steeringTarget;
-                    steeringDirection.y = transform.position.y;
-                    Vector3 difference = (steeringDirection - transform.position) * 4f;
-                    Vector3 forceVector = difference.magnitude > 1 ? difference.normalized : difference;
-                    GetComponent<Rigidbody>().AddForce(forceVector * movementSpeed);
+                    //Vector3 steeringDirection = agent.steeringTarget;
+                    //Vector3 difference = (steeringDirection - transform.position) * 4f;
+                    //Vector3 forceVector = difference.magnitude > 1 ? difference.normalized : difference;
+                    //Vector3 forceVector = difference.normalized;
+                    //GetComponent<Rigidbody>().AddForce(forceVector * movementSpeed);
 
                     // Look where you are going.
-                    Vector3 lookTarget = agent.steeringTarget;
-                    lookTarget.y = transform.position.y;
-                    Vector3 lookDirection = lookTarget - transform.position;
-                    transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 250 * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
+                    //Vector3 lookTarget = agent.steeringTarget;
+                    //lookTarget.y = transform.position.y;
+                    //Vector3 lookDirection = lookTarget - transform.position;
+                    //transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 250 * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
+                    agent.isStopped = false;
                 }
                 else // If the point is not 2m away...
                 {
@@ -280,6 +291,7 @@ public class Enemy : MonoBehaviour
                     Vector3 lookDirection = lookTarget - transform.position;
                     transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 250 * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
                     investigateTimer += Time.fixedDeltaTime;
+                    agent.isStopped = true;
                 }
             }
             else
@@ -290,6 +302,7 @@ public class Enemy : MonoBehaviour
                 Vector3 lookDirection = lookTarget - transform.position;
                 transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 250 * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
                 investigateTimer += Time.fixedDeltaTime;
+                agent.isStopped = true;
             }
         }
         else
@@ -338,8 +351,9 @@ public class Enemy : MonoBehaviour
         returnPath.points = new List<PathPoint>();
         for (int i = 0; i < _pathObject.childCount; i++)
         {
-            PathPoint newPathPoint;
-            newPathPoint.point = _pathObject.GetChild(i).position;
+            PathPoint newPathPoint = new PathPoint();
+            newPathPoint.point.standPosition = _pathObject.GetChild(i).position;
+            newPathPoint.point.watchPosition = _pathObject.GetChild(i).GetChild(0).position;
             newPathPoint.waitTime = _pathObject.GetChild(i).localScale.y;
             returnPath.points.Add(newPathPoint);
         }
@@ -363,11 +377,14 @@ public class Enemy : MonoBehaviour
                 agent.SetDestination(currentStateObject.guard.standPosition);
                 break;
             case AIState.patrol:
-                agent.SetDestination(currentStateObject.patrol.points[currentPoint].point);
+                agent.SetDestination(currentStateObject.patrol.points[currentPoint].point.standPosition);
                 break;
             case AIState.investigate:
                 break;
             case AIState.deactivated:
+                agent.isStopped = true;
+                agent.updatePosition = false;
+                agent.updateRotation = false;
                 if (lightsActive) { DeactivateLights(); }
                 break;
             default:
@@ -377,27 +394,32 @@ public class Enemy : MonoBehaviour
 
     bool GoToCurrentPathPoint()
     {
-        Vector3 target = currentStateObject.patrol.points[currentPoint].point;
+        Vector3 target = currentStateObject.patrol.points[currentPoint].point.standPosition;
         target.y = transform.position.y;
         float distance = Vector3.Distance(transform.position, target);
         // If the point that the enemy needs to stand at is further than 0.25m away...
         if (distance > 0.25f)
         {
             // Rotate the guard towards the position they need to watch.
-            Vector3 lookTarget = currentStateObject.patrol.points[currentPoint].point;
-            lookTarget.y = transform.position.y;
-            Vector3 lookDirection = lookTarget - transform.position;
-            transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 5 * Mathf.Deg2Rad, 0f);
+            //Vector3 lookTarget = currentStateObject.patrol.points[currentPoint].point;
+            //lookTarget.y = transform.position.y;
+            //Vector3 lookDirection = lookTarget - transform.position;
+            //transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 5 * Mathf.Deg2Rad, 0f);
 
             // Move the Enemy towards where the NavMesh wants to go.
-            Vector3 steeringDirection = agent.steeringTarget;
-            steeringDirection.y = transform.position.y;
-            Vector3 forceVector = (steeringDirection - transform.position).normalized;
-            GetComponent<Rigidbody>().AddForce(forceVector * Time.deltaTime * 1000f * movementSpeed);
+            //Vector3 steeringDirection = agent.steeringTarget;
+            //Vector3 forceVector = (steeringDirection - transform.position).normalized;
+            //GetComponent<Rigidbody>().AddForce(forceVector * movementSpeed);
+            agent.isStopped = false;
             return false;
         }
         else
         {
+            Vector3 lookTarget = currentStateObject.patrol.points[currentPoint].point.watchPosition;
+            lookTarget.y = transform.position.y;
+            Vector3 lookDirection = lookTarget - transform.position;
+            transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 5 * Mathf.Deg2Rad, 0f);
+            agent.isStopped = true;
             return true;
         }
     }

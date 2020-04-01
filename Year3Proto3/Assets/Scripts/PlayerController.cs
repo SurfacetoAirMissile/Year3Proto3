@@ -39,6 +39,7 @@ public class PlayerController : MonoBehaviour
     public Vector3 startPosition = Vector3.zero;
 
     public GameObject physicsObject;
+    public ConsoleBehaviour console;
     public Vector3[] lastFramePositions;
 
     private int secondPuzzle;
@@ -95,6 +96,13 @@ public class PlayerController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
     }
 
+    void StepUp()
+    {
+        Vector3 tempPos = transform.position;
+        tempPos.y += 0.1f;
+        transform.position = tempPos;
+    }
+
     IEnumerator WaitForAnimation()
     {
         yield return new WaitForSeconds(0.50f);
@@ -106,7 +114,7 @@ public class PlayerController : MonoBehaviour
     IEnumerator StartSecond()
     {
         yield return new WaitForSeconds(0.51f);
-        AttemptHack();
+        StartHack(false);
     }
 
     private void FixedUpdate()
@@ -136,6 +144,20 @@ public class PlayerController : MonoBehaviour
             UpdateMove();
             if (Input.GetKeyDown(KeyCode.E))
             {
+                if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit raycastHit, 2f))
+                {
+                    if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("Console"))
+                    {
+                        ConsoleBehaviour consoleScript = raycastHit.transform.parent.GetComponent<ConsoleBehaviour>();
+                        if (consoleScript.active)
+                        {
+                            console = consoleScript;
+                            hackableDoor = console.door;
+                            hackableEnemy = null;
+                            puzzleDestination = transform.position;
+                        }
+                    }
+                }
                 AttemptHack();
             }
             if (Input.GetKeyDown(KeyCode.Space))
@@ -194,34 +216,40 @@ public class PlayerController : MonoBehaviour
             }
             if (isHacking)
             {
-                if (currentPuzzle.Validate())
+                if (currentPuzzle)
                 {
-                    StartCoroutine(WaitForAnimation());
-                    if (hackableEnemy)
+                    if (currentPuzzle.Validate())
                     {
-                        isHacking = false;
-                        if (secondPuzzle != 2)
+                        StartCoroutine(WaitForAnimation());
+                        if (hackableEnemy)
                         {
-                            StartCoroutine(StartSecond());
+                            isHacking = false;
+                            if (secondPuzzle != 2)
+                            {
+                                StartCoroutine(StartSecond());
+                            }
+                            else
+                            {
+                                hackableEnemy.SwitchState(Enemy.AIState.deactivated);
+                                hackableEnemy.isBeingHacked = false;
+                                hackableEnemy.transform.GetChild(2).GetComponent<AudioSource>().DOFade(0f, 0.25f);
+                                hackableEnemy = null;
+                                GameManager.Instance.playerControl = true;
+                            }
                         }
-                        else
+                        if (hackableDoor)
                         {
-                            hackableEnemy.SwitchState(Enemy.AIState.deactivated);
-                            hackableEnemy.isBeingHacked = false;
-                            hackableEnemy.transform.GetChild(2).GetComponent<AudioSource>().DOFade(0f, 0.25f);
-                            hackableEnemy = null;
+                            console.active = false;
+                            console = null;
+                            hackableDoor.ToggleDoorOpen();
+                            hackableDoor = null;
+                            isHacking = false;
                             GameManager.Instance.playerControl = true;
                         }
                     }
-                    if (hackableDoor)
-                    {
-                        hackableDoor.ToggleDoorOpen();
-                        hackableDoor = null;
-                        isHacking = false;
-                        GameManager.Instance.playerControl = true;
-                    }
                 }
             }
+                
         }
         UpdateCamera();
     }
@@ -348,5 +376,13 @@ public class PlayerController : MonoBehaviour
         Vector3 targetPosition = puzzleDestination;
         targetPosition.y = transform.parent.position.y;
         transform.parent.position = Vector3.Lerp(startPosition, targetPosition, _amount);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.transform.tag == "Stairs")
+        {
+            StepUp();
+        }
     }
 }

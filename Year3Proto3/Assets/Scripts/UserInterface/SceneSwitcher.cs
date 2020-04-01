@@ -78,6 +78,7 @@ public class SceneSwitcher : MonoBehaviour
                     Application.Quit();
                     break;
                 case "Death":
+                    GlobalData.deathCount++;
                     isDead = false;
                     SceneManager.LoadScene(curScene);       // Function to run on death fade completion
                     break;

@@ -14,7 +14,7 @@ public class SceneSwitcher : MonoBehaviour
     private bool isSwitching = false;
     private float fadeTimeCur = 0.0f;
 
-    private Vector3 gravity;
+    private static Vector3 gravity;
     private bool isDead;
     private GameObject fadePanelAlt;
 
@@ -31,12 +31,20 @@ public class SceneSwitcher : MonoBehaviour
         //toolSound = Resources.Load("Audio/SFX/sfxUIClick3") as AudioClip;
         fadePanelAlt = fadePanel.transform.GetChild(0).gameObject;
 
-        gravity = Physics.gravity;
-        Physics.gravity = new Vector3(0, 0, 0);
+        if (!GlobalData.gravitySet) 
+        { 
+            gravity = Physics.gravity;
+            GlobalData.gravitySet = true;
+        }
     }
 
     void Start()
     {
+        if (curScene == "TitleScreen")
+        {
+            Physics.gravity = new Vector3(0, 0, 0);
+        }
+
         if (fadePanel == null)
         {
             fadePanel = GameObject.Find("FadePanel(Clone)");
@@ -105,7 +113,6 @@ public class SceneSwitcher : MonoBehaviour
 
     public void SceneSwitch(string scene)
     {
-        Physics.gravity = gravity;
         StartFade();
         targetScene = scene;
     }
@@ -121,6 +128,7 @@ public class SceneSwitcher : MonoBehaviour
     {
         if (!isSwitching && !isFading)
         {
+            Physics.gravity = gravity;
             canvas.DOFade(1.0f, fadeTime).SetEase(Ease.InOutSine);
 
             isSwitching = true;
@@ -134,6 +142,10 @@ public class SceneSwitcher : MonoBehaviour
                 source.Play();
             }
 
+        }
+        else
+        {
+            Debug.LogError("Cannot perform this SceneSwitch while fading in progress!");
         }
     }
 

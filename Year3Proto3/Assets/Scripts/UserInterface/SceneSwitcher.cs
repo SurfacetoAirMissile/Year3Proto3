@@ -14,6 +14,10 @@ public class SceneSwitcher : MonoBehaviour
     private bool isSwitching = false;
     private float fadeTimeCur = 0.0f;
 
+    private Vector3 gravity;
+    private bool isDead;
+    private GameObject fadePanelAlt;
+
     public AudioClip clickSound;
     public AudioClip toolSound;
 
@@ -23,25 +27,21 @@ public class SceneSwitcher : MonoBehaviour
         curScene = SceneManager.GetActiveScene().name;
         GlobalData.curScene = curScene;
         Debug.Log("Current scene: " + curScene);
-        clickSound = Resources.Load("Audio/SFX/sfxUIClick2") as AudioClip;
+        //clickSound = Resources.Load("Audio/SFX/sfxUIClick2") as AudioClip;
         //toolSound = Resources.Load("Audio/SFX/sfxUIClick3") as AudioClip;
+        fadePanelAlt = fadePanel.transform.GetChild(0).gameObject;
+
+        gravity = Physics.gravity;
+        Physics.gravity = new Vector3(0, 0, 0);
     }
 
     void Start()
     {
-        if (curScene == "TitleScreen")
-        {
-            //GlobalData.LastScene = curScene;
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                SceneSwitch("SamCopy5");
-            }
-        }
-
         if (fadePanel == null)
         {
             fadePanel = GameObject.Find("FadePanel(Clone)");
         }
+
         fadePanel.SetActive(true);
 
         Invoke("ExitFade", fadeInDelay);
@@ -61,19 +61,22 @@ public class SceneSwitcher : MonoBehaviour
 
         if (isSwitching && !isFading)
         {
-            if (targetScene == "")
+            switch (targetScene)
             {
-                ExitFade();
-            }
-
-            if (targetScene == "Quit")
-            {
-                Application.Quit();
-            }
-            else
-            {
-                SceneManager.LoadScene(targetScene);
-                Debug.Log("Switched from " + curScene + " to " + targetScene);
+                case "":
+                    ExitFade();
+                    break;
+                case "Quit":
+                    Application.Quit();
+                    break;
+                case "Death":
+                    isDead = false;
+                    SceneManager.LoadScene(curScene);       // Function to run on death fade completion
+                    break;
+                default:
+                    SceneManager.LoadScene(targetScene);
+                    Debug.Log("Switched from " + curScene + " to " + targetScene);
+                    break;
             }
 
             isSwitching = false;
@@ -85,15 +88,34 @@ public class SceneSwitcher : MonoBehaviour
             {
                 SceneSwitch("SamCopy5");
             }
+
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                SceneSwitch("DavidDev");
+            }
         }
+
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            DeathFade();
+        }
+
+        fadePanelAlt.SetActive(isDead);
     }
 
     public void SceneSwitch(string scene)
     {
+        Physics.gravity = gravity;
         StartFade();
         targetScene = scene;
     }
 
+    public void DeathFade()
+    {
+        StartFade();
+        isDead = true;
+        targetScene = "Death";
+    }
 
     private void StartFade()
     {

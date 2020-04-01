@@ -32,6 +32,10 @@ public class SceneSwitcher : MonoBehaviour
         if (curScene == "TitleScreen")
         {
             //GlobalData.LastScene = curScene;
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                SceneSwitch("SamCopy5");
+            }
         }
 
         if (fadePanel == null)
@@ -73,6 +77,14 @@ public class SceneSwitcher : MonoBehaviour
             }
 
             isSwitching = false;
+        }
+
+        if (curScene == "TitleScreen")
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                SceneSwitch("SamCopy5");
+            }
         }
     }
 

@@ -145,7 +145,7 @@ public class SceneSwitcher : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Cannot perform this SceneSwitch while fading in progress!");
+            //Debug.LogError("Cannot perform this SceneSwitch while fading in progress!");
         }
     }
 

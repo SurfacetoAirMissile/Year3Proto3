@@ -118,7 +118,6 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-
         if (physicsObject)
         {
             UpdatePhysicsFrames(physicsObject.transform.position);
@@ -136,48 +135,48 @@ public class PlayerController : MonoBehaviour
         if (GameManager.Instance.playerControl)
         {
             UpdateMove();
-        }
+        }
     }
 
     // Update is called once per frame
     void Update()
-    {
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit raycastHit, 2f, 1 << LayerMask.NameToLayer("Console")))
-        {
-            ConsoleBehaviour consoleScript = raycastHit.transform.parent.GetComponent<ConsoleBehaviour>();
-            if (consoleScript.active)
-            {
-                hackableDoor = consoleScript.door;
-                FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Hacking);
-            }
+    {
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit raycastHit, 2f, 1 << LayerMask.NameToLayer("Console")))
+        {
+            ConsoleBehaviour consoleScript = raycastHit.transform.parent.GetComponent<ConsoleBehaviour>();
+            if (consoleScript.active)
+            {
+                hackableDoor = consoleScript.door;
+                FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Hacking);
+            }
         }
-        else if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out raycastHit, 2f))
-        {
-            if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("PhysicsObject"))
-            {
-                FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Pickup);
-            }
-            else
-            {
-                hackableDoor = null;
-                if (raycastHit.transform.CompareTag("Enemy"))
-                {
-                    if (raycastHit.transform.GetComponentInParent<Enemy>().isActive())
-                    {
-                        lookingAtEnemy = true;
-                        FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Hacking);
-                    }
-                    else
-                    {
-                        lookingAtEnemy = false;
-                        FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.None);
-                    }
-                }
-                else
-                {
-                    FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.None);
-                }
-            }
+        else if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out raycastHit, 2f))
+        {
+            if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("PhysicsObject"))
+            {
+                FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Pickup);
+            }
+            else
+            {
+                hackableDoor = null;
+                if (raycastHit.transform.CompareTag("Enemy"))
+                {
+                    if (raycastHit.transform.GetComponentInParent<Enemy>().isActive())
+                    {
+                        lookingAtEnemy = true;
+                        FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Hacking);
+                    }
+                    else
+                    {
+                        lookingAtEnemy = false;
+                        FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.None);
+                    }
+                }
+                else
+                {
+                    FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.None);
+                }
+            }
         }
         else
         {
@@ -192,18 +191,18 @@ public class PlayerController : MonoBehaviour
                 FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Holding);
             }
             if (Input.GetKeyDown(KeyCode.E))
-            {
-                if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out raycastHit, 2f, 1 << LayerMask.NameToLayer("Console")))
-                {
-                    ConsoleBehaviour consoleScript = raycastHit.transform.parent.GetComponent<ConsoleBehaviour>();
-                    if (consoleScript.active)
-                    {
-                        console = consoleScript;
-                        hackableDoor = console.door;
-                        hackableEnemy = null;
-                        puzzleDestination = transform.position;
-                        puzzleLookDestination = raycastHit.transform.parent.GetChild(2).position;
-                    }
+            {
+                if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out raycastHit, 2f, 1 << LayerMask.NameToLayer("Console")))
+                {
+                    ConsoleBehaviour consoleScript = raycastHit.transform.parent.GetComponent<ConsoleBehaviour>();
+                    if (consoleScript.active)
+                    {
+                        console = consoleScript;
+                        hackableDoor = console.door;
+                        hackableEnemy = null;
+                        puzzleDestination = transform.position;
+                        puzzleLookDestination = raycastHit.transform.parent.GetChild(2).position;
+                    }
                 }
                 if (hackableEnemy && lookingAtEnemy || hackableDoor)
                 {
@@ -216,7 +215,7 @@ public class PlayerController : MonoBehaviour
                 //physicsObject
                 if (!physicsObject)
                 {
-                    if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out raycastHit, 2f))
+                    if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out raycastHit, 2f, 1 << LayerMask.NameToLayer("PhysicsObject")))
                     {
                         if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("PhysicsObject"))
                         {

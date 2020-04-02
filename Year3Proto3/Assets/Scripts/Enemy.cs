@@ -294,6 +294,7 @@ public class Enemy : MonoBehaviour
                     //lookTarget.y = transform.position.y;
                     //Vector3 lookDirection = lookTarget - transform.position;
                     //transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 250 * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
+                    investigateTimer += Time.fixedDeltaTime;
                     agent.isStopped = false;
                     animWalking = true;
                 }
@@ -333,6 +334,9 @@ public class Enemy : MonoBehaviour
         {
             // Set the colours.
             ActivateLights(spottedColour);
+            AudioSource audio = GetComponentInChildren<AudioSource>();
+            if (!audio.isPlaying) { audio.Play(); }
+            FindObjectOfType<SceneSwitcher>().DeathFade();
         }
         else // If the enemy isn't aware of the player...
         {

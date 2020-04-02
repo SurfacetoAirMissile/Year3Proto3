@@ -27,7 +27,7 @@ public class Door : MonoBehaviour
 
     public void ToggleDoorOpen()
     {
-        Vector3 position = new Vector3(0.0f, 0.0f, transform.localScale.z);
+        Vector3 position = new Vector3(0.0f, 2f, 0.0f);
 
         //interact = false;
 

@@ -5,16 +5,14 @@ using UnityEngine;
 public class PuzzleTriggerBehaviour : MonoBehaviour
 {
     [SerializeField]
-    private bool isEnemy;
     private Enemy enemy;
+    private Transform lookPoint;
     // Start is called before the first frame update
 
     void Start()
     {
-        if (isEnemy)
-        {
-            enemy = GetComponentInParent<Enemy>();
-        }
+        enemy = GetComponentInParent<Enemy>();
+        lookPoint = transform.GetChild(0);
     }
 
     // Update is called once per frame
@@ -27,12 +25,28 @@ public class PuzzleTriggerBehaviour : MonoBehaviour
     {
         if (GetComponentInParent<Enemy>().isActive())
         {
-            if (other.gameObject.name.Contains("Player") && isEnemy)
+            if (other.gameObject.name.Contains("Player"))
             {
                 if (other.GetComponentInChildren<PlayerController>().hackableEnemy == null)
                 {
                     other.GetComponentInChildren<PlayerController>().hackableEnemy = enemy;
                     other.GetComponentInChildren<PlayerController>().puzzleDestination = transform.position;
+                    other.GetComponentInChildren<PlayerController>().puzzleLookDestination = lookPoint.position;
+                }
+            }
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (GetComponentInParent<Enemy>().isActive())
+        {
+            if (other.gameObject.name.Contains("Player"))
+            {
+                if (other.GetComponentInChildren<PlayerController>().hackableEnemy == enemy)
+                {
+                    other.GetComponentInChildren<PlayerController>().puzzleDestination = transform.position;
+                    other.GetComponentInChildren<PlayerController>().puzzleLookDestination = lookPoint.position;
                 }
             }
         }
@@ -40,7 +54,7 @@ public class PuzzleTriggerBehaviour : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.name.Contains("Player") && isEnemy)
+        if (other.gameObject.name.Contains("Player"))
         {
             if (other.GetComponentInChildren<PlayerController>().hackableEnemy == enemy)
             { other.GetComponentInChildren<PlayerController>().hackableEnemy = null; }

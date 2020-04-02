@@ -42,13 +42,19 @@ public class BoxBehaviour : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Enemy enemy = other.GetComponent("Enemy") as Enemy;
-        if (enemy) { if (!listeners.Contains(enemy)) { listeners.Add(enemy); } }
+        if (other.transform.parent)
+        {
+            Enemy enemy = other.transform.parent.GetComponent("Enemy") as Enemy;
+            if (enemy) { if (!listeners.Contains(enemy)) { listeners.Add(enemy); } }
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        Enemy enemy = other.GetComponent("Enemy") as Enemy;
-        if (enemy) { if (listeners.Contains(enemy)) { listeners.Remove(enemy); } }
+        if (other.transform.parent)
+        {
+            Enemy enemy = other.transform.parent.GetComponent("Enemy") as Enemy;
+            if (enemy) { if (listeners.Contains(enemy)) { listeners.Remove(enemy); } }
+        }
     }
 }

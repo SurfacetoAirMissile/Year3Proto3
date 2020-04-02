@@ -352,10 +352,10 @@ public class PlayerController : MonoBehaviour
 
     void UpdateMove()
     {
-        float movementAmount = movementSpeed * Time.deltaTime * 60.0f * playerRB.mass;
+        float movementAmount = movementSpeed;
         Vector3 forceTotal = Vector3.zero;
 
-        if(Input.GetKey(KeyCode.LeftShift)) movementAmount *= 2.0f;
+        if (Input.GetKey(KeyCode.LeftShift)) movementAmount *= 2.0f;
 
         if (Input.GetKey(forwardKey)) { forceTotal += transform.parent.forward; }
         if (Input.GetKey(backKey)) { forceTotal -= transform.parent.forward; }
@@ -365,7 +365,7 @@ public class PlayerController : MonoBehaviour
 
         if (forceTotal != Vector3.zero)
         {
-            playerRB.AddForce(forceTotal.normalized * movementAmount, ForceMode.Acceleration);
+            playerRB.AddForce(forceTotal.normalized * movementAmount);
         }
     }
 
@@ -423,7 +423,7 @@ public class PlayerController : MonoBehaviour
         playerRB.velocity = Vector3.zero;
         Vector3 targetPosition = puzzleDestination;
         targetPosition.y = transform.parent.position.y;
-        transform.parent.GetChild(1).LookAt(Vector3.Lerp(startLookPosition, puzzleLookDestination, _amount));
+        transform.parent.GetChild(0).LookAt(Vector3.Lerp(startLookPosition, puzzleLookDestination, _amount));
         transform.parent.position = Vector3.Lerp(startPosition, targetPosition, _amount);
     }
 }

@@ -2521,32 +2521,12 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -239474079654087753, guid: 1f1cafab7ded3cb43ae141666d5fd1a8, type: 3}
---- !u!1 &377520979 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3506485075767987694, guid: 24557031a30290246865d07e6598ca85,
-    type: 3}
-  m_PrefabInstance: {fileID: 1407494652}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &377520980 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 500691489551745021, guid: 24557031a30290246865d07e6598ca85,
     type: 3}
   m_PrefabInstance: {fileID: 1407494652}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &377520981
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 377520979}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca919b67a06e5c44594e5c3611b691e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  door: {fileID: 502601210}
-  active: 1
 --- !u!1001 &380515866
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8830,6 +8810,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2058005073}
     m_Modifications:
+    - target: {fileID: 185842391, guid: 24557031a30290246865d07e6598ca85, type: 3}
+      propertyPath: door
+      value: 
+      objectReference: {fileID: 502601210}
     - target: {fileID: 2068756856, guid: 24557031a30290246865d07e6598ca85, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -9039,6 +9023,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6610254015593624029, guid: 3fceee4364a570540bc5507456176080,
+        type: 3}
+      propertyPath: playerControl
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6610254015593624030, guid: 3fceee4364a570540bc5507456176080,
         type: 3}

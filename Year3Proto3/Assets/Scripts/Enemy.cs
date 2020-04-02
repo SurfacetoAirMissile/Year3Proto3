@@ -80,6 +80,10 @@ public class Enemy : MonoBehaviour
     private bool canGetToInvestigateTarget;
     private float investigateTimer;
     private float investigationTime;
+    private float activeEmissionIntensity = 0f;
+    private Rigidbody enemyRB;
+    private bool animWalking = false;
+    private Animator enemyAnim = null;
 
     private void Start()
     {
@@ -106,6 +110,9 @@ public class Enemy : MonoBehaviour
         canGetToInvestigateTarget = false;
         investigateTimer = 0f;
         investigationTime = 5f;
+        activeEmissionIntensity = transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().material.GetFloat("Vector1_E770BCCD");
+        enemyRB = GetComponent<Rigidbody>();
+        enemyAnim = GetComponent<Animator>();
     }
 
     /*
@@ -210,7 +217,9 @@ public class Enemy : MonoBehaviour
             agent.isStopped = true;
             agent.updatePosition = false;
             agent.updateRotation = false;
+            animWalking = false;
         }
+        enemyAnim.SetBool("Walking", animWalking);
     }
 
     void GuardUpdate()
@@ -232,6 +241,7 @@ public class Enemy : MonoBehaviour
             Vector3 lookDirection = lookTarget - transform.position;
             transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 250 * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
             agent.isStopped = false;
+            animWalking = true;
         }
         else // If the point is not 0.25m away...
         {
@@ -241,21 +251,23 @@ public class Enemy : MonoBehaviour
             Vector3 lookDirection = lookTarget - transform.position;
             transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 250 * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
             agent.isStopped = true;
+            animWalking = false;
         }
     }
 
     void PatrolUpdate()
     {
         // GoToCurrentPathPoint returns true if the enemy is within the minimum distance for a point
-        if (GoToCurrentPathPoint())
+        currentPointTime += Time.deltaTime;
+        if (currentPointTime >= currentStateObject.patrol.points[currentPoint].waitTime)
         {
-            currentPointTime += Time.deltaTime;
-            if (currentPointTime >= currentStateObject.patrol.points[currentPoint].waitTime)
-            {
-                currentPointTime = 0f;
-                currentPoint = GetNextPathPoint();
-                agent.SetDestination(currentStateObject.patrol.points[currentPoint].point.standPosition);
-            }
+            currentPointTime = 0f;
+            currentPoint = GetNextPathPoint();
+            agent.SetDestination(currentStateObject.patrol.points[currentPoint].point.standPosition);
+        }
+        else
+        {
+            GoToCurrentPathPoint();
         }
     }
 
@@ -282,6 +294,7 @@ public class Enemy : MonoBehaviour
                     //Vector3 lookDirection = lookTarget - transform.position;
                     //transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 250 * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
                     agent.isStopped = false;
+                    animWalking = true;
                 }
                 else // If the point is not 2m away...
                 {
@@ -292,6 +305,7 @@ public class Enemy : MonoBehaviour
                     transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 250 * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f);
                     investigateTimer += Time.fixedDeltaTime;
                     agent.isStopped = true;
+                    animWalking = false;
                 }
             }
             else
@@ -329,19 +343,19 @@ public class Enemy : MonoBehaviour
     void DeactivateLights()
     {
         // Set the colours and switch off the light.
-        transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_EmissiveColor", Color.gray);
-        transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", Color.gray);
-        transform.GetChild(1).GetComponent<Light>().enabled = false;
+        transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().material.SetColor("Color_538469C8", Color.black);
+        transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().material.SetFloat("Vector1_E770BCCD", 0f);
+        transform.Find("Root/Hips/Spine1/Spine2/Spine3/Neck1/Neck2/Head/Spot Light").GetComponent<Light>().enabled = false;
         lightsActive = false;
     }
 
     void ActivateLights(Color _colour)
     {
         // Set the colours and switch on the light.
-        transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_EmissiveColor", _colour);
-        transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_UnlitColor", _colour);
-        transform.GetChild(1).GetComponent<Light>().enabled = true;
-        transform.GetChild(1).GetComponent<Light>().color = _colour;
+        transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().material.SetColor("Color_538469C8", _colour);
+        transform.GetChild(0).GetComponent<SkinnedMeshRenderer>().material.SetFloat("Vector1_E770BCCD", activeEmissionIntensity);
+        transform.Find("Root/Hips/Spine1/Spine2/Spine3/Neck1/Neck2/Head/Spot Light").GetComponent<Light>().enabled = true;
+        transform.Find("Root/Hips/Spine1/Spine2/Spine3/Neck1/Neck2/Head/Spot Light").GetComponent<Light>().color = _colour;
         lightsActive = true;
     }
 
@@ -411,6 +425,7 @@ public class Enemy : MonoBehaviour
             //Vector3 forceVector = (steeringDirection - transform.position).normalized;
             //GetComponent<Rigidbody>().AddForce(forceVector * movementSpeed);
             agent.isStopped = false;
+            animWalking = true;
             return false;
         }
         else
@@ -420,6 +435,7 @@ public class Enemy : MonoBehaviour
             Vector3 lookDirection = lookTarget - transform.position;
             transform.forward = Vector3.RotateTowards(transform.forward, lookDirection, 5 * Mathf.Deg2Rad, 0f);
             agent.isStopped = true;
+            animWalking = false;
             return true;
         }
     }

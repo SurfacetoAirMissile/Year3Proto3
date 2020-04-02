@@ -31,17 +31,20 @@ public class PlayerController : MonoBehaviour
     public Door hackableDoor = null;
 
     public Vector3 puzzleDestination = Vector3.zero;
+    public Vector3 puzzleLookDestination = Vector3.zero;
     public bool isHacking = false;
     public Puzzle currentPuzzle;
     public bool lerpingToPuzzle = false;
     public float lerpTime = 0.2f;
     public float currentTime = 0.0f;
     public Vector3 startPosition = Vector3.zero;
+    public Vector3 startLookPosition = Vector3.zero;
 
     public GameObject physicsObject;
     public ConsoleBehaviour console;
     public Vector3[] lastFramePositions;
-
+    private Animator playerAnim = null;
+    private bool lookingAtEnemy = false;
     private int secondPuzzle;
 
     public Vector3 GetPhysicsVelocity()
@@ -88,19 +91,13 @@ public class PlayerController : MonoBehaviour
         playerRB = transform.parent.GetComponent<Rigidbody>();
         lastFramePositions = new Vector3[5] { Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero };
         secondPuzzle = 2;
+        playerAnim = transform.parent.Find("Main Camera/Arms").GetComponent<Animator>();
     }
 
     // Start is called before the first frame update
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-    }
-
-    void StepUp()
-    {
-        Vector3 tempPos = transform.position;
-        tempPos.y += 0.1f;
-        transform.position = tempPos;
     }
 
     IEnumerator WaitForAnimation()
@@ -133,18 +130,53 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float mouseX = Mathf.Clamp(Input.GetAxisRaw(mouseXInputName) * mouseSensitivity * Time.smoothDeltaTime, -50f, 50f);
-        cameraPitch += Mathf.Clamp(Input.GetAxisRaw(mouseYInputName) * mouseSensitivity * Time.smoothDeltaTime, -50f, 50f);
-        cameraPitch = Mathf.Clamp(cameraPitch, -45f, 45f);
-        //Debug.Log(cameraPitch);
-        transform.parent.Rotate(new Vector3(0f, mouseX, 0f));
-
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit raycastHit, 2f))
+        {
+            if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("Console"))
+            {
+                ConsoleBehaviour consoleScript = raycastHit.transform.parent.GetComponent<ConsoleBehaviour>();
+                if (consoleScript.active) { hackableDoor = consoleScript.door; }
+                FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Hacking);
+            }
+            else if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("PhysicsObject"))
+            {
+                FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Pickup);
+            }
+            else
+            {
+                hackableDoor = null;
+                if (raycastHit.transform.CompareTag("Enemy"))
+                {
+                    if (raycastHit.transform.GetComponentInParent<Enemy>().isActive())
+                    {
+                        lookingAtEnemy = true;
+                        FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Hacking);
+                    }
+                    else
+                    {
+                        lookingAtEnemy = false;
+                        FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.None);
+                    }
+                }
+                
+            }
+        }
+        else
+        {
+            lookingAtEnemy = false;
+            hackableDoor = null;
+            FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.None);
+        }
         if (GameManager.Instance.playerControl)
         {
+            if (physicsObject)
+            {
+                FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Holding);
+            }
             UpdateMove();
             if (Input.GetKeyDown(KeyCode.E))
             {
-                if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit raycastHit, 2f))
+                if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out raycastHit, 2f))
                 {
                     if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("Console"))
                     {
@@ -158,7 +190,10 @@ public class PlayerController : MonoBehaviour
                         }
                     }
                 }
-                AttemptHack();
+                if (hackableEnemy && lookingAtEnemy || hackableDoor)
+                {
+                    AttemptHack();
+                }
             }
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -170,7 +205,7 @@ public class PlayerController : MonoBehaviour
                 //physicsObject
                 if (!physicsObject)
                 {
-                    if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit raycastHit, 2f))
+                    if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out raycastHit, 2f))
                     {
                         if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("PhysicsObject"))
                         {
@@ -198,9 +233,16 @@ public class PlayerController : MonoBehaviour
                     physicsObject = null;
                 }
             }
+            float mouseX = Mathf.Clamp(Input.GetAxisRaw(mouseXInputName) * mouseSensitivity * Time.smoothDeltaTime, -50f, 50f);
+            cameraPitch += Mathf.Clamp(Input.GetAxisRaw(mouseYInputName) * mouseSensitivity * Time.smoothDeltaTime, -50f, 50f);
+            cameraPitch = Mathf.Clamp(cameraPitch, -45f, 45f);
+            //Debug.Log(cameraPitch);
+            transform.parent.Rotate(new Vector3(0f, mouseX, 0f));
+            UpdateCamera();
         }
         else
         {
+            FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Puzzle);
             if (lerpingToPuzzle)
             {
                 currentTime += Time.deltaTime;
@@ -251,7 +293,8 @@ public class PlayerController : MonoBehaviour
             }
                 
         }
-        UpdateCamera();
+        playerAnim.SetBool("Hacking", isHacking || secondPuzzle != 2);
+        playerAnim.SetBool("Ready", hackableDoor || (hackableEnemy && lookingAtEnemy));
     }
 
     void UpdateCamera()
@@ -297,7 +340,8 @@ public class PlayerController : MonoBehaviour
         cameraLookTarget = Vector3.RotateTowards(cameraLookTarget, cameraPitch > 0f ? Vector3.up : Vector3.down, Mathf.Abs(cameraPitch) * Mathf.Deg2Rad, 0f);
 
         //Camera.main.transform.LookAt(transform.parent.position + Camera.main.transform.localPosition + cameraLookTarget, cameraUp);
-        Camera.main.transform.LookAt(transform.parent.position + Camera.main.transform.localPosition + cameraLookTarget);
+        //Camera.main.transform.LookAt(transform.parent.position + Camera.main.transform.localPosition + cameraLookTarget);
+        Camera.main.transform.LookAt(Camera.main.transform.position + cameraLookTarget);
         //float upDifference = frontOffset.z + backOffset.z;
         //if (frontOffset != Vector3.zero || backOffset != Vector3.zero)
         //{
@@ -329,6 +373,7 @@ public class PlayerController : MonoBehaviour
         {
             currentTime = 0f;
             startPosition = transform.parent.position;
+            startLookPosition = transform.parent.GetChild(1).forward;
             lerpingToPuzzle = true;
             GameManager.Instance.playerControl = false;
             hackableEnemy.isBeingHacked = true;
@@ -337,6 +382,7 @@ public class PlayerController : MonoBehaviour
         {
             currentTime = 0f;
             startPosition = transform.parent.position;
+            startLookPosition = transform.parent.GetChild(1).forward;
             lerpingToPuzzle = true;
             GameManager.Instance.playerControl = false;
         }
@@ -362,8 +408,8 @@ public class PlayerController : MonoBehaviour
                 currentPuzzle = Instantiate(GameManager.Instance.CreatePuzzle((GameManager.PuzzleID)puzzle)).GetComponentInChildren<Puzzle>();
             }
         }
-        currentPuzzle.transform.parent.position = transform.position + (transform.forward * 0.4f);
-        currentPuzzle.transform.parent.GetComponent<RectTransform>().localScale = new Vector3(0.5f, 0.5f);
+        currentPuzzle.transform.parent.position = Camera.main.transform.position + (Camera.main.transform.forward * 0.4f);
+        currentPuzzle.transform.parent.GetComponent<RectTransform>().localScale = new Vector3(0.3f, 0.3f);
         currentPuzzle.GetComponent<HologramFX>().showHologram = true;
         currentPuzzle.transform.parent.LookAt(transform);
         isHacking = true;
@@ -375,14 +421,7 @@ public class PlayerController : MonoBehaviour
         playerRB.velocity = Vector3.zero;
         Vector3 targetPosition = puzzleDestination;
         targetPosition.y = transform.parent.position.y;
+        transform.parent.GetChild(1).LookAt(Vector3.Lerp(startLookPosition, puzzleLookDestination, _amount));
         transform.parent.position = Vector3.Lerp(startPosition, targetPosition, _amount);
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.transform.tag == "Stairs")
-        {
-            StepUp();
-        }
     }
 }

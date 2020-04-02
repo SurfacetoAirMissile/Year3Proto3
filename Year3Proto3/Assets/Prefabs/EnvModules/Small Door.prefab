@@ -89,7 +89,7 @@ MeshCollider:
   m_GameObject: {fileID: 1011696646057831309}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Convex: 1
   m_CookingOptions: 30
@@ -103,6 +103,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2581564359444633904}
+  - component: {fileID: 2604142927030027535}
+  - component: {fileID: 437782868668377870}
   m_Layer: 0
   m_Name: Small Door
   m_TagString: Untagged
@@ -117,7 +119,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1551726207288437539}
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 0.5169584}
   m_Children:
@@ -126,6 +128,32 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &2604142927030027535
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1551726207288437539}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.0030472, y: 2.6500192, z: 0.33802262}
+  m_Center: {x: -1.0158273, y: 1.3653355, z: 0.022796301}
+--- !u!114 &437782868668377870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1551726207288437539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e09ad3ab00c815a4e8be22aeb81d01b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Motion: {x: -2.25, y: 0, z: 0}
 --- !u!1 &7941086963374666517
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,7 +243,7 @@ MeshCollider:
   m_GameObject: {fileID: 7941086963374666517}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Convex: 1
   m_CookingOptions: 30

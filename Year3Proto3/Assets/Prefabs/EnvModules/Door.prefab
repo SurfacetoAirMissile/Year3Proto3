@@ -134,6 +134,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7050718652934797657}
+  - component: {fileID: 5173344781752023842}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -157,6 +158,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -180.00002, z: 0}
+--- !u!114 &5173344781752023842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6305732835306163018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e09ad3ab00c815a4e8be22aeb81d01b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  doorCollider: {fileID: 2330013201154036119}
 --- !u!1 &6831414844698102948
 GameObject:
   m_ObjectHideFlags: 0
@@ -169,6 +183,7 @@ GameObject:
   - component: {fileID: 6445987934514218809}
   - component: {fileID: 8757486929991730516}
   - component: {fileID: 176550529178569401}
+  - component: {fileID: 2330013201154036119}
   m_Layer: 0
   m_Name: polySurface47
   m_TagString: Untagged
@@ -251,3 +266,15 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -7100491929894383033, guid: d6b3cc2bf1c757441b10a653a56cca43, type: 3}
+--- !u!114 &2330013201154036119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6831414844698102948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70237fdb72d33994181a8c2ab0cd5d3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

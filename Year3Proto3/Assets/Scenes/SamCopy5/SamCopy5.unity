@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 131.16855, g: 162.52502, b: 215.10977, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2133,12 +2133,42 @@ PrefabInstance:
     - target: {fileID: 7456058546024357583, guid: afbcbc6ee1480444aac85fdb63859211,
         type: 3}
       propertyPath: m_Mass
-      value: 2
+      value: 9.8
       objectReference: {fileID: 0}
     - target: {fileID: 7456058546024357583, guid: afbcbc6ee1480444aac85fdb63859211,
         type: 3}
       propertyPath: m_Constraints
       value: 112
+      objectReference: {fileID: 0}
+    - target: {fileID: 7456058546024357583, guid: afbcbc6ee1480444aac85fdb63859211,
+        type: 3}
+      propertyPath: m_Drag
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7456058546024357583, guid: afbcbc6ee1480444aac85fdb63859211,
+        type: 3}
+      propertyPath: m_IsKinematic
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7456058546024357583, guid: afbcbc6ee1480444aac85fdb63859211,
+        type: 3}
+      propertyPath: m_UseGravity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7456058546024357583, guid: afbcbc6ee1480444aac85fdb63859211,
+        type: 3}
+      propertyPath: m_AngularDrag
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7456058546024357583, guid: afbcbc6ee1480444aac85fdb63859211,
+        type: 3}
+      propertyPath: m_CollisionDetection
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7456058546024357583, guid: afbcbc6ee1480444aac85fdb63859211,
+        type: 3}
+      propertyPath: m_Interpolate
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: afbcbc6ee1480444aac85fdb63859211, type: 3}
@@ -9239,7 +9269,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1772079214}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1

@@ -6,7 +6,7 @@ using DG.Tweening;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] [Tooltip("How quickly the player moves.")]
-    private float movementSpeed = 3;
+    private float movementSpeed = 4;
 
     [SerializeField] [Tooltip("How quickly the player leans. (x would mean a full lean in 1/x seconds)")]
     private float leanSpeed = 3;
@@ -352,8 +352,10 @@ public class PlayerController : MonoBehaviour
 
     void UpdateMove()
     {
-        float movementAmount = movementSpeed * Time.deltaTime * 1000f;
+        float movementAmount = movementSpeed * Time.deltaTime * 60.0f * playerRB.mass;
         Vector3 forceTotal = Vector3.zero;
+
+        if(Input.GetKey(KeyCode.LeftShift)) movementAmount *= 2.0f;
 
         if (Input.GetKey(forwardKey)) { forceTotal += transform.parent.forward; }
         if (Input.GetKey(backKey)) { forceTotal -= transform.parent.forward; }
@@ -363,7 +365,7 @@ public class PlayerController : MonoBehaviour
 
         if (forceTotal != Vector3.zero)
         {
-            playerRB.AddForce(forceTotal.normalized * movementAmount);
+            playerRB.AddForce(forceTotal.normalized * movementAmount, ForceMode.Acceleration);
         }
     }
 

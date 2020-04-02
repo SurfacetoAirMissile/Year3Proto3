@@ -70,7 +70,7 @@ SkinnedMeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 545479400897280620}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -1129,7 +1129,7 @@ GameObject:
   - component: {fileID: 7630348991943983756}
   - component: {fileID: 6899277289079582880}
   m_Layer: 0
-  m_Name: FirstPersonArms_MostlyAnimated(WithCamera)
+  m_Name: Arms
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1325,7 +1325,7 @@ Transform:
   m_Children:
   - {fileID: 7630348991943983756}
   m_Father: {fileID: 7456058546024357579}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &7456058545053811622
 Camera:
@@ -1547,7 +1547,7 @@ Transform:
   - {fileID: 7456058545975130162}
   - {fileID: 7456058546306070791}
   m_Father: {fileID: 7456058546024357579}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7456058545198875858
 MonoBehaviour:
@@ -1561,7 +1561,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a61d7f782508591458275d8168e446a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 2
+  movementSpeed: 10
   leanSpeed: 3
   leanCurve:
     serializedVersion: 2
@@ -1591,12 +1591,14 @@ MonoBehaviour:
   hackableEnemy: {fileID: 0}
   hackableDoor: {fileID: 0}
   puzzleDestination: {x: 0, y: 0, z: 0}
+  puzzleLookDestination: {x: 0, y: 0, z: 0}
   isHacking: 0
   currentPuzzle: {fileID: 0}
   lerpingToPuzzle: 0
   lerpTime: 0.2
   currentTime: 0
   startPosition: {x: 0, y: 0, z: 0}
+  startLookPosition: {x: 0, y: 0, z: 0}
   physicsObject: {fileID: 0}
   console: {fileID: 0}
   lastFramePositions: []
@@ -1705,8 +1707,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 7456058545198875859}
   - {fileID: 7456058545053811617}
+  - {fileID: 7456058545198875859}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1897,7 +1899,7 @@ SkinnedMeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7632547006175032961}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1

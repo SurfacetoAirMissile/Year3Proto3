@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using UnityEngine.Rendering;
 
 public class SceneSwitcher : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class SceneSwitcher : MonoBehaviour
     private static Vector3 gravity;
     private bool isDead;
     private GameObject fadePanelAlt;
+    private Volume darkFog;
 
     public AudioClip clickSound;
     public AudioClip toolSound;
@@ -30,6 +32,7 @@ public class SceneSwitcher : MonoBehaviour
         //clickSound = Resources.Load("Audio/SFX/sfxUIClick2") as AudioClip;
         //toolSound = Resources.Load("Audio/SFX/sfxUIClick3") as AudioClip;
         fadePanelAlt = fadePanel.transform.GetChild(0).gameObject;
+        darkFog = GameObject.Find("DarkFog").GetComponent<Volume>();
 
         if (!GlobalData.gravitySet) 
         { 
@@ -105,6 +108,7 @@ public class SceneSwitcher : MonoBehaviour
         }
 
         fadePanelAlt.SetActive(isDead);
+        darkFog.weight = canvas.alpha;
     }
 
     public void SceneSwitch(string scene)

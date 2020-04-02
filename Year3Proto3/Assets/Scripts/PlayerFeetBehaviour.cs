@@ -34,11 +34,15 @@ public class PlayerFeetBehaviour : MonoBehaviour
                 direction.y *= -1;
                 direction.Normalize();
                 Vector3 tempPos = transform.position;
-                //tempPos.y += difference;
-                tempPos += direction * 1.5f * difference;
+                tempPos.y += difference * 2f;
+                //tempPos += direction * 1.5f * difference;
                 transform.position = tempPos;
                 lastStep = 0f;
-                rb.velocity = Vector3.zero;
+                Vector3 tempVel;
+                tempVel.x = Mathf.Clamp(rb.velocity.x, 0f, rb.velocity.normalized.x);
+                tempVel.y = Mathf.Clamp(rb.velocity.y, 0f, rb.velocity.normalized.y);
+                tempVel.z = Mathf.Clamp(rb.velocity.z, 0f, rb.velocity.normalized.z);
+                rb.velocity = tempVel;
             }
         }
     }

@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
     private KeyCode rightKey = KeyCode.D;
     private string mouseXInputName = "Mouse X", mouseYInputName = "Mouse Y";
     private float cameraPitch = 0f;
+    private Quaternion physicsObjectRotation;
 
     public Enemy hackableEnemy = null;
     public Door hackableDoor = null;
@@ -114,22 +115,25 @@ public class PlayerController : MonoBehaviour
         StartHack(false);
     }
 
-    private void FixedUpdate()
+    // Update is called once per frame
+    void Update()
     {
+
         if (physicsObject)
         {
             UpdatePhysicsFrames(physicsObject.transform.position);
             Vector3 targetPos = Camera.main.transform.position + (Camera.main.transform.forward * 2f);
+
             physicsObject.transform.position = targetPos;
+            physicsObject.transform.rotation = Quaternion.Lerp(physicsObject.transform.rotation, transform.rotation, Time.deltaTime * 60.0f);
+
             Rigidbody rigid = physicsObject.GetComponent<Rigidbody>();
+            if(rigid.useGravity) physicsObjectRotation = physicsObject.transform.rotation;
             rigid.velocity = Vector3.zero;
             rigid.angularVelocity = Vector3.zero;
+            rigid.useGravity = false;
         }
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit raycastHit, 2f))
         {
             if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("Console"))
@@ -194,10 +198,6 @@ public class PlayerController : MonoBehaviour
                 {
                     AttemptHack();
                 }
-            }
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                playerRB.AddForce(Vector3.up * 400f);
             }
             if (Input.GetKeyDown(KeyCode.F))
             {
@@ -352,7 +352,7 @@ public class PlayerController : MonoBehaviour
 
     void UpdateMove()
     {
-        float movementAmount = movementSpeed;
+        float movementAmount = movementSpeed * Time.deltaTime * 1000.0f * playerRB.mass;
         Vector3 forceTotal = Vector3.zero;
 
         if (Input.GetKey(KeyCode.LeftShift)) movementAmount *= 2.0f;

@@ -168,20 +168,21 @@ public class Enemy : MonoBehaviour
 
     private bool AwareOfPlayer()
     {
-        Vector3 directionToFeet = player.position - transform.GetChild(0).position;
+        Vector3 eyePosition = transform.Find("Root/Hips/Spine1/Spine2/Spine3/Neck1/Neck2/Head/Spot Light").position;
+        Vector3 directionToFeet = player.position - eyePosition;
         float angleToFeet = Vector3.Angle(directionToFeet, transform.forward);
         bool withinMaxAngleFeet = angleToFeet <= (FOV * 0.5f);
         bool hitPlayerLayerFeet = false;
-        if (Physics.Raycast(transform.GetChild(0).position, directionToFeet.normalized, out RaycastHit raycastHit, spottingDistance))
+        if (Physics.Raycast(eyePosition, directionToFeet.normalized, out RaycastHit raycastHit, spottingDistance))
         {
             hitPlayerLayerFeet = raycastHit.collider.gameObject.layer == kPlayerLayer;
         }
 
-        Vector3 directionToHead = player.GetChild(0).position - transform.GetChild(0).position;
+        Vector3 directionToHead = player.GetChild(0).position - eyePosition;
         float angleToHead = Vector3.Angle(directionToHead, transform.forward);
         bool withinMaxAngleHead = angleToHead <= (FOV * 0.5f);
         bool hitPlayerLayerHead = false;
-        if (Physics.Raycast(transform.GetChild(0).position, directionToHead.normalized, out raycastHit, spottingDistance))
+        if (Physics.Raycast(eyePosition, directionToHead.normalized, out raycastHit, spottingDistance))
         {
             hitPlayerLayerHead = raycastHit.collider.gameObject.layer == kPlayerLayer;
         }

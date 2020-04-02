@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
     private KeyCode rightKey = KeyCode.D;
     private string mouseXInputName = "Mouse X", mouseYInputName = "Mouse Y";
     private float cameraPitch = 0f;
+    private Quaternion physicsObjectRotation;
 
     public Enemy hackableEnemy = null;
     public Door hackableDoor = null;
@@ -114,52 +115,69 @@ public class PlayerController : MonoBehaviour
         StartHack(false);
     }
 
-    private void FixedUpdate()
+    // Update is called once per frame
+    void Update()
     {
+
         if (physicsObject)
         {
             UpdatePhysicsFrames(physicsObject.transform.position);
             Vector3 targetPos = Camera.main.transform.position + (Camera.main.transform.forward * 2f);
+
             physicsObject.transform.position = targetPos;
+            physicsObject.transform.rotation = Quaternion.Lerp(physicsObject.transform.rotation, transform.rotation, Time.deltaTime * 60.0f);
+
             Rigidbody rigid = physicsObject.GetComponent<Rigidbody>();
+            if(rigid.useGravity) physicsObjectRotation = physicsObject.transform.rotation;
             rigid.velocity = Vector3.zero;
             rigid.angularVelocity = Vector3.zero;
+            rigid.useGravity = false;
         }
+        if (GameManager.Instance.playerControl)
+        {
+            UpdateMove();
+        }
     }
 
     // Update is called once per frame
     void Update()
-    {
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit raycastHit, 2f))
-        {
-            if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("Console"))
-            {
-                ConsoleBehaviour consoleScript = raycastHit.transform.parent.GetComponent<ConsoleBehaviour>();
-                if (consoleScript.active) { hackableDoor = consoleScript.door; }
-                FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Hacking);
-            }
-            else if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("PhysicsObject"))
-            {
-                FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Pickup);
-            }
-            else
-            {
-                hackableDoor = null;
-                if (raycastHit.transform.CompareTag("Enemy"))
-                {
-                    if (raycastHit.transform.GetComponentInParent<Enemy>().isActive())
-                    {
-                        lookingAtEnemy = true;
-                        FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Hacking);
-                    }
-                    else
-                    {
-                        lookingAtEnemy = false;
-                        FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.None);
-                    }
-                }
-                
-            }
+    {
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit raycastHit, 2f, 1 << LayerMask.NameToLayer("Console")))
+        {
+            ConsoleBehaviour consoleScript = raycastHit.transform.parent.GetComponent<ConsoleBehaviour>();
+            if (consoleScript.active)
+            {
+                hackableDoor = consoleScript.door;
+                FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Hacking);
+            }
+        }
+        else if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out raycastHit, 2f))
+        {
+            if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("PhysicsObject"))
+            {
+                FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Pickup);
+            }
+            else
+            {
+                hackableDoor = null;
+                if (raycastHit.transform.CompareTag("Enemy"))
+                {
+                    if (raycastHit.transform.GetComponentInParent<Enemy>().isActive())
+                    {
+                        lookingAtEnemy = true;
+                        FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Hacking);
+                    }
+                    else
+                    {
+                        lookingAtEnemy = false;
+                        FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.None);
+                    }
+                }
+                else
+                {
+                    FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.None);
+                }
+            }
         }
         else
         {
@@ -173,31 +191,24 @@ public class PlayerController : MonoBehaviour
             {
                 FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Holding);
             }
-            UpdateMove();
             if (Input.GetKeyDown(KeyCode.E))
-            {
-                if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out raycastHit, 2f))
-                {
-                    if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("Console"))
-                    {
-                        ConsoleBehaviour consoleScript = raycastHit.transform.parent.GetComponent<ConsoleBehaviour>();
-                        if (consoleScript.active)
-                        {
-                            console = consoleScript;
-                            hackableDoor = console.door;
-                            hackableEnemy = null;
-                            puzzleDestination = transform.position;
-                        }
-                    }
+            {
+                if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out raycastHit, 2f, 1 << LayerMask.NameToLayer("Console")))
+                {
+                    ConsoleBehaviour consoleScript = raycastHit.transform.parent.GetComponent<ConsoleBehaviour>();
+                    if (consoleScript.active)
+                    {
+                        console = consoleScript;
+                        hackableDoor = console.door;
+                        hackableEnemy = null;
+                        puzzleDestination = transform.position;
+                        puzzleLookDestination = raycastHit.transform.parent.GetChild(2).position;
+                    }
                 }
                 if (hackableEnemy && lookingAtEnemy || hackableDoor)
                 {
                     AttemptHack();
                 }
-            }
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                playerRB.AddForce(Vector3.up * 400f);
             }
             if (Input.GetKeyDown(KeyCode.F))
             {
@@ -282,6 +293,7 @@ public class PlayerController : MonoBehaviour
                         if (hackableDoor)
                         {
                             console.active = false;
+                            secondPuzzle = 2;
                             console = null;
                             hackableDoor.ToggleDoorOpen();
                             hackableDoor = null;
@@ -352,10 +364,10 @@ public class PlayerController : MonoBehaviour
 
     void UpdateMove()
     {
-        float movementAmount = movementSpeed * Time.deltaTime * 60.0f * playerRB.mass;
+        float movementAmount = movementSpeed * 5f;
         Vector3 forceTotal = Vector3.zero;
 
-        if(Input.GetKey(KeyCode.LeftShift)) movementAmount *= 2.0f;
+        if (Input.GetKey(KeyCode.LeftShift)) movementAmount *= 1.3f;
 
         if (Input.GetKey(forwardKey)) { forceTotal += transform.parent.forward; }
         if (Input.GetKey(backKey)) { forceTotal -= transform.parent.forward; }
@@ -365,7 +377,7 @@ public class PlayerController : MonoBehaviour
 
         if (forceTotal != Vector3.zero)
         {
-            playerRB.AddForce(forceTotal.normalized * movementAmount, ForceMode.Acceleration);
+            playerRB.AddForce(forceTotal.normalized * movementAmount);
         }
     }
 
@@ -423,7 +435,7 @@ public class PlayerController : MonoBehaviour
         playerRB.velocity = Vector3.zero;
         Vector3 targetPosition = puzzleDestination;
         targetPosition.y = transform.parent.position.y;
-        transform.parent.GetChild(1).LookAt(Vector3.Lerp(startLookPosition, puzzleLookDestination, _amount));
+        transform.parent.GetChild(0).LookAt(Vector3.Lerp(startLookPosition, puzzleLookDestination, _amount));
         transform.parent.position = Vector3.Lerp(startPosition, targetPosition, _amount);
     }
 }

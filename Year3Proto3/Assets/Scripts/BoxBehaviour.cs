@@ -32,10 +32,7 @@ public class BoxBehaviour : MonoBehaviour
             GetComponent<AudioSource>().Play();
             foreach (Enemy enemy in listeners)
             {
-                if (enemy.isActive())
-                {
-                    enemy.InvestigateTarget(transform.position);
-                }
+                if (enemy.isActive()) enemy.InvestigateTarget(transform.position);
             }
         }
     }

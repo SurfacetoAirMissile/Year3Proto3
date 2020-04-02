@@ -95,12 +95,7 @@ public class SceneSwitcher : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.E))
             {
-                SceneSwitch("SamCopy5");
-            }
-
-            if (Input.GetKeyDown(KeyCode.P))
-            {
-                SceneSwitch("DavidDev");
+                SceneSwitch("SamLevelDesign");
             }
         }
 

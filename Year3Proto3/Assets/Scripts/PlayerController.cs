@@ -125,20 +125,27 @@ public class PlayerController : MonoBehaviour
             rigid.velocity = Vector3.zero;
             rigid.angularVelocity = Vector3.zero;
         }
+        if (GameManager.Instance.playerControl)
+        {
+            UpdateMove();
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit raycastHit, 2f))
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit raycastHit, 2f, 1 << LayerMask.NameToLayer("Console")))
         {
-            if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("Console"))
+            ConsoleBehaviour consoleScript = raycastHit.transform.parent.GetComponent<ConsoleBehaviour>();
+            if (consoleScript.active)
             {
-                ConsoleBehaviour consoleScript = raycastHit.transform.parent.GetComponent<ConsoleBehaviour>();
-                if (consoleScript.active) { hackableDoor = consoleScript.door; }
+                hackableDoor = consoleScript.door;
                 FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Hacking);
             }
-            else if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("PhysicsObject"))
+        }
+        else if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out raycastHit, 2f))
+        {
+            if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("PhysicsObject"))
             {
                 FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Pickup);
             }
@@ -158,7 +165,10 @@ public class PlayerController : MonoBehaviour
                         FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.None);
                     }
                 }
-                
+                else
+                {
+                    FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.None);
+                }
             }
         }
         else
@@ -173,21 +183,18 @@ public class PlayerController : MonoBehaviour
             {
                 FindObjectOfType<InteractionPrompt>().SetPrompt(Interaction.Holding);
             }
-            UpdateMove();
             if (Input.GetKeyDown(KeyCode.E))
             {
-                if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out raycastHit, 2f))
+                if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out raycastHit, 2f, 1 << LayerMask.NameToLayer("Console")))
                 {
-                    if (raycastHit.transform.gameObject.layer == LayerMask.NameToLayer("Console"))
+                    ConsoleBehaviour consoleScript = raycastHit.transform.parent.GetComponent<ConsoleBehaviour>();
+                    if (consoleScript.active)
                     {
-                        ConsoleBehaviour consoleScript = raycastHit.transform.parent.GetComponent<ConsoleBehaviour>();
-                        if (consoleScript.active)
-                        {
-                            console = consoleScript;
-                            hackableDoor = console.door;
-                            hackableEnemy = null;
-                            puzzleDestination = transform.position;
-                        }
+                        console = consoleScript;
+                        hackableDoor = console.door;
+                        hackableEnemy = null;
+                        puzzleDestination = transform.position;
+                        puzzleLookDestination = raycastHit.transform.parent.GetChild(2).position;
                     }
                 }
                 if (hackableEnemy && lookingAtEnemy || hackableDoor)
@@ -282,6 +289,7 @@ public class PlayerController : MonoBehaviour
                         if (hackableDoor)
                         {
                             console.active = false;
+                            secondPuzzle = 2;
                             console = null;
                             hackableDoor.ToggleDoorOpen();
                             hackableDoor = null;
@@ -352,10 +360,10 @@ public class PlayerController : MonoBehaviour
 
     void UpdateMove()
     {
-        float movementAmount = movementSpeed;
+        float movementAmount = movementSpeed * 5f;
         Vector3 forceTotal = Vector3.zero;
 
-        if (Input.GetKey(KeyCode.LeftShift)) movementAmount *= 2.0f;
+        if (Input.GetKey(KeyCode.LeftShift)) movementAmount *= 1.3f;
 
         if (Input.GetKey(forwardKey)) { forceTotal += transform.parent.forward; }
         if (Input.GetKey(backKey)) { forceTotal -= transform.parent.forward; }
